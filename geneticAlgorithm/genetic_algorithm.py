@@ -10,9 +10,6 @@ from tournamentSelection import tournamentSelection
 random.seed(120)
 
 
-
-
-
 def random_population(problem, pop_size):
     population = []
     for _ in range(pop_size):
@@ -20,15 +17,6 @@ def random_population(problem, pop_size):
         fitness = problem.evaluate(permutation)
         population.append(Individual(permutation, fitness))
     return population
-
-
-'''
-  _  _                    _ _        
- | \| |___ _ _ _ __  __ _| (_)______ 
- | .` / _ \ '_| '  \/ _` | | |_ / -_)
- |_|\_\___/_| |_|_|_\__,_|_|_/__\___|
-                                     
-'''
 
 
 def normalizeFitness(problem, population):
@@ -50,28 +38,8 @@ def normalizeFitness(problem, population):
         res += population[i].fitness
 
 
-'''
-  ___                  _     ___      _        _   _          
- | _ \__ _ _ _ ___ _ _| |_  / __| ___| |___ __| |_(_)___ _ _  
- |  _/ _` | '_/ -_) ' \  _| \__ \/ -_) / -_) _|  _| / _ \ ' \ 
- |_| \__,_|_| \___|_||_\__| |___/\___|_\___\__|\__|_\___/_||_|
-                                                                                           
-'''
-
-
-
-
 def parentSelection(problem, population):
     return tournamentSelection(problem, population, min(int(len(population[0].permutation) / 10), 1))
-
-
-'''
-   ___                                
-  / __|_ _ ___ ______ _____ _____ _ _ 
- | (__| '_/ _ (_-<_-</ _ \ V / -_) '_|
-  \___|_| \___/__/__/\___/\_/\___|_|  
-                                      
-'''
 
 
 def crossover(a, b, problem):
@@ -80,15 +48,6 @@ def crossover(a, b, problem):
     children[0] = eax(a, b, problem)
     children[1] = eax(a, b, problem)
     return children
-
-
-'''
-  __  __      _        _   _          
- |  \/  |_  _| |_ __ _| |_(_)___ _ _  
- | |\/| | || |  _/ _` |  _| / _ \ ' \ 
- |_|  |_|\_,_|\__\__,_|\__|_\___/_||_|
-                                      
-'''
 
 
 def mutate(permutation, mutationRate=0.01):
@@ -103,15 +62,6 @@ def mutate(permutation, mutationRate=0.01):
         permutation[ixb] = tmpElem
         val = random.random()
     return permutation
-
-
-'''
-  _  _         _      ___            ___      _        _   _          
- | \| |_____ _| |_   / __|___ _ _   / __| ___| |___ __| |_(_)___ _ _  
- | .` / -_) \ /  _| | (_ / -_) ' \  \__ \/ -_) / -_) _|  _| / _ \ ' \ 
- |_|\_\___/_\_\\__|  \___\___|_||_| |___/\___|_\___\__|\__|_\___/_||_|
-                                                                      
-'''
 
 
 def selectionBaseOnAptitude(problem, populationA, populationB, populationSize):
@@ -158,8 +108,6 @@ def genetic_algorithm(problem, pop_size=50, max_gen=2000):
     population = random_population(problem, pop_size)
     fitness_history = []
     best_permutation = None
-    # SUA IMPLEMENTACAO AQUI
-
     normalizeFitness(problem, population)
 
     bestFitness = problem.evaluate(population[0].permutation)
@@ -186,11 +134,11 @@ def genetic_algorithm(problem, pop_size=50, max_gen=2000):
             curr = problem.evaluate(individual.permutation)
             if (curr <= bestThis):
                 bestThis = curr
-            if (curr <= bestFitness):
+            if curr <= bestFitness:
                 bestFitness = curr
                 best_permutation = individual.permutation
 
-        if (bestFitness != lastBest):
+        if bestFitness != lastBest:
             utils.drawTour(problem, best_permutation, bestFitness, generations)
             lastBestGen = generations
 

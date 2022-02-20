@@ -41,34 +41,19 @@ def generateABcycle(Ea, Eb, problem, size):
     abcycles = []
     # helper variable to store beginning of cycle
     i = 0
-    # Adjency list of A
+    # Adjacency list of A
     adjListA = []
-    # Adjency list of B
+    # Adjacency list of B
     adjListB = []
-    edgesInA = 0
-    edgesInB = 0
-    for _ in range(size):
-        adjListA.append([])
-        adjListB.append([])
-    for edge in Ea:
-        u = edge[0]
-        v = edge[1]
-        # add edges v -> u and u -> v to adjency list
-        adjListA[u].append(v)
-        adjListA[v].append(u)
-        edgesInA += 1
-    for edge in Eb:
-        u = edge[0]
-        v = edge[1]
-        # add edges v -> u and u -> v to adjency list
-        adjListB[u].append(v)
-        adjListB[v].append(u)
-        edgesInB += 1
+    createArrayOfEmptyArray(adjListA, adjListB, size)
+    edgesInA = addEdgesToAdjList(adjListA, Ea)
+    edgesInB = addEdgesToAdjList(adjListB, Eb)
     A = 0
     B = 1
     while (edgesInA > 0):
 
-        # select vertex U the belongs to the vertices V s.t. number of edges incident to vertex  included in A != 0 randomly.
+        # select vertex U the belongs to the vertices V s.t. number of edges incident to vertex  included in A != 0
+        # randomly.
         vi = random.randint(0, size - 1)
         while (len(adjListA[vi]) == 0):
             vi = random.randint(0, size - 1)
@@ -91,7 +76,7 @@ def generateABcycle(Ea, Eb, problem, size):
         # controls last vertex visited in path
         prev = vj
         isCycle = 0
-        while ((not isCycle)):
+        while not isCycle:
             if (parent == A):
                 edgeB = []
                 edgeB.append(prev)
@@ -137,6 +122,23 @@ def generateABcycle(Ea, Eb, problem, size):
             cycle.append(path[i])
         abcycles.append(cycle)
     return abcycles
+
+
+def addEdgesToAdjList(adjListA, edgesList):
+    edgesCount = 0
+    for edge in edgesList:
+        u = edge[0]
+        v = edge[1]
+        # add edges v -> u and u -> v to adjacency list
+        adjListA[u].append(v)
+        adjListA[v].append(u)
+        edgesCount += 1
+    return edgesCount
+
+def createArrayOfEmptyArray(adjListA, adjListB, size):
+    for _ in range(size):
+        adjListA.append([])
+        adjListB.append([])
 
 
 # select cycles with probability 0.5
