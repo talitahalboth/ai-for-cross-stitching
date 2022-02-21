@@ -5,6 +5,7 @@ shortestHamiltonianPath = True
 
 class TSP():
     def __init__(self, instance_file):
+        self.fileName = instance_file
         self.__read_file(instance_file)
 
     def __read_file(self, instance_file):

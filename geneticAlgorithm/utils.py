@@ -8,17 +8,15 @@ def drawTour(problem, permutation, best, gen):
     splitPermutation = permutation.index(len(permutation) -1)
     firstHalf = permutation[:splitPermutation]
     secondHalf = permutation[splitPermutation+1:]
-    print(firstHalf, secondHalf)
     permutation = secondHalf + firstHalf
 
     for i in permutation:
         if (problem.coords[i] != [0, 0]):
             coords.append(problem.coords[i])
-    # if (permutation[0] != len(permutation)):
     # coords.append(problem.coords[permutation[0]])
-    # print(coords)
     xs, ys = zip(*coords) #create lists of x and y values
-
+    fig = plt.gcf()
+    fig.canvas.manager.set_window_title(problem.fileName)
     plt.clf()
     plt.plot(xs,ys, marker='o')
     plt.title("Custo:" + str(best) + " Geração: " + str(gen))
