@@ -18,6 +18,7 @@ def plot_evolution(fitness_history, problem):
 
 def ga_tests():
     instances = [  'instances/teste.tsp']
+    # instances = ['instances/berlin15.tsp']
     #'instances/berlin15.tsp', 'instances/berlin16.tsp']
     # instances += ['instances/dj38.tsp', 'instances/berlin52.tsp', 'instances/eli51.tsp']
     print('Executando Algoritmo Genético...')
@@ -25,7 +26,8 @@ def ga_tests():
         problem = TSP(instance)
         path, history = genetic_algorithm(problem)
         cost = problem.evaluate(path)
-
+    # while(1):
+    #     x =1
 
 # a_star_tests()
 ga_tests()

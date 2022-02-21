@@ -124,7 +124,7 @@ def genetic_algorithm(problem, pop_size=50, max_gen=2000):
     utils.drawTour(problem, best_permutation, bestFitness, 1)
     bestGens = []
     bestGens.append(0)
-    while (generations < max_gen) and (generations) < lastBestGen * 5:
+    while (generations < max_gen) and (generations) < lastBestGen * 10:
         newGen = new_generation(problem, population)
         normalizeFitness(problem, newGen)
         population = newGen
@@ -146,6 +146,7 @@ def genetic_algorithm(problem, pop_size=50, max_gen=2000):
         generations += 1
 
         fitness_history.append(bestThis)
+    utils.drawTour(problem, best_permutation, bestFitness, -1)
     return best_permutation, fitness_history
 
 

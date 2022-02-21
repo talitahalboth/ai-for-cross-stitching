@@ -2,7 +2,7 @@
 
 Tries to find the most optimized path for cross stitching.
 
-This uses an genetic algorithm to solve the traveling salesman problem, modified so that it is not necessary to go back to the starting point.
+This uses an genetic algorithm to solve the traveling salesman problem, modified so that it is not necessary to go back to the starting point, the [shortest / minimum length hamiltonian path](https://stackoverflow.com/a/7158721).
 
 ## Genetic Algorithm
 
