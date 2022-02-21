@@ -1,8 +1,11 @@
 # ai-for-cross-stitching
 
 Tries to find the most optimized path for cross stitching.
+Here we ignore the "cross" and treat each stitch as a point, so, depending on the way the cross is carried out, the optimal path may change.
 
-This uses an genetic algorithm to solve the traveling salesman problem, modified so that it is not necessary to go back to the starting point, the [shortest / minimum length hamiltonian path](https://stackoverflow.com/a/7158721).
+This is a genetic algorithm, so it is not guaranteed that it'll find the best solution.
+
+We use a genetic algorithm to solve a modified version of the traveling salesman problem, so that it is not necessary to go back to the starting point. This is also known as the [shortest / minimum length hamiltonian path](https://stackoverflow.com/a/7158721).
 
 ## Genetic Algorithm
 
