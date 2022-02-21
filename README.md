@@ -12,5 +12,16 @@ For the parent selection we do the tournament selection.
 
 ### Crossover
 
-The crossover is carried out using the EAX (edge assembly crossover algorithm).
+The crossover is carried out using the Edge Assembly Crossover (EAX) algorithm [[1]](#1)
 
+### Mutation
+
+The mutation rate was set to 0.01. The mutation works by randomly swapping elements in the permutation of nodes.
+
+### Next Generation Selection
+
+The next generation is selected based on their aptitude, combining parents and children, and the n best individuals are chosen.
+
+## References
+<a id="1">[1]</a> 
+Nagata, Y. (1997). Edge assembly crossover: A high-power genetic algorithm fot the traveling salesman problem. In Proceedings of the 7th International Conference on Genetic Algorithms, 1997.)
