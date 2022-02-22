@@ -1,24 +1,22 @@
 import random
-
+import numpy as np
 
 # check if a path forms  an AB cycle
 from individual import Individual
 
 
 def isABcycle(path, size):
-    pathVertices = []
     A = 0
     B = 1
+    pathVertices = np.array([path[0][0]])
 
-    pathVertices.append(path[0][0])
+    # pathVertices.append()
     for i in range(len(path)):
-        pathVertices.append(path[i][1])
+        pathVertices = np.append(pathVertices, path[i][1])
     # stores the time at which an edge was visited and its from parent A.
     # 0 if edge wasn't visited
-    visitedByA = []
+    visitedByA = np.zeros(size, dtype=int)
 
-    for i in range(size):
-        visitedByA.append(0)
     current = A
     count = 0
     for edge in pathVertices:
