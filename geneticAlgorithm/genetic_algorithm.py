@@ -5,17 +5,27 @@ from EAX import eax
 from individual import Individual
 from tsp import TSP
 # from EAX import eax
+import numpy as np
 from tournamentSelection import tournamentSelection
 
 random.seed(120)
 
 
 def random_population(problem, pop_size):
-    population = []
+    # population = []
+    # for _ in range(pop_size):
+    #     permutation = problem.random_path()
+    #     fitness = problem.evaluate(permutation)
+    #     population.append(Individual(permutation, fitness))
+    # return population
+
+    population = np.array([])
     for _ in range(pop_size):
         permutation = problem.random_path()
         fitness = problem.evaluate(permutation)
-        population.append(Individual(permutation, fitness))
+        population = np.append(population, Individual(permutation, fitness))
+    print(population.size)
+
     return population
 
 
@@ -86,7 +96,7 @@ def nextGenSelection(problem, populationA, populationB, populationSize):
 
 
 def new_generation(problem, population):
-    children = []
+    children = np.array([])
     for _ in range(len(population)):
         parentA = parentSelection(problem, population)
         parentB = parentSelection(problem, population)
@@ -95,17 +105,16 @@ def new_generation(problem, population):
 
         mutate(newIndividual.permutation)
         mutate(newIndividual1.permutation)
-
-        children.append(newIndividual)
-        children.append(newIndividual1)
+        children = np.append(children, [newIndividual, newIndividual1])
 
     nextGen = nextGenSelection(problem, population, children, len(population))
     return nextGen
     pass
 
 
-def genetic_algorithm(problem, pop_size=50, max_gen=50):
+def genetic_algorithm(problem, pop_size=50, max_gen=2000):
     population = random_population(problem, pop_size)
+    # print(population)
     fitness_history = []
     best_permutation = None
     normalizeFitness(problem, population)
@@ -122,8 +131,8 @@ def genetic_algorithm(problem, pop_size=50, max_gen=50):
             best_permutation = individual.permutation
     generations = 1
     # utils.drawTour(problem, best_permutation, bestFitness, 1)
-    bestGens = []
-    bestGens.append(0)
+    bestGens = np.array([])
+    bestGens = np.append(bestGens, 0)
     while (generations < max_gen) and (generations) < lastBestGen * 5:
         print(generations)
         newGen = new_generation(problem, population)
@@ -133,22 +142,22 @@ def genetic_algorithm(problem, pop_size=50, max_gen=50):
         bestThis = problem.evaluate(population[0].permutation)
         for individual in population:
             curr = problem.evaluate(individual.permutation)
-            if (curr <= bestThis):
-                bestThis = curr
+            bestThis = max(curr, bestThis)
             if curr <= bestFitness:
                 bestFitness = curr
                 best_permutation = individual.permutation
 
         if bestFitness != lastBest:
-            print("new best!")
-            utils.drawTour(problem, best_permutation, bestFitness, generations)
+            # if (generations % 1 == 1):
+            # utils.drawTour(problem, best_permutation, bestFitness, generations)
             lastBestGen = generations
+            bestGens = np.append(bestGens, generations)
 
-            bestGens.append(generations)
         generations += 1
 
         fitness_history.append(bestThis)
-    utils.drawTour(problem, best_permutation, bestFitness, -1)
+    # utils.drawTour(problem, best_permutation, bestFitness, -1)
+    print(problem.evaluate(best_permutation))
     return best_permutation, fitness_history
 
 

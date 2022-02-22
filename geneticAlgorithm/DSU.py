@@ -1,11 +1,11 @@
+import numpy as np
+
 # Disjoint-Set Union
 # data structure that stores a collection of disjoint (non-overlapping) sets
 class DSU:
     def __init__(self, size, edges):
         self.size = size
-        self.p = []
-        for i in range(size):
-            self.p.append(i)
+        self.p = np.arange(size)
 
     # finds set that i belongs to
     def findSet(self, i):
