@@ -1,7 +1,7 @@
 import random
 import itertools
 
-shortestHamiltonianPath = False
+shortestHamiltonianPath = True
 
 class TSP():
     def __init__(self, instance_file):
