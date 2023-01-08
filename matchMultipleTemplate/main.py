@@ -113,13 +113,14 @@ def matchTemplate (fileName):
     fig = plt.figure(figsize=(10,10))
     plt.imshow(imgRGB, alpha=0.4)
     drawPath(problem, path)
-    plt.show()
+    # plt.show()
+    plt.savefig('paths/'+fileName)
 
     """# ❤️ If you liked this video, please, make an upvote and subscribe to my channel!
     # 🔗 https://www.youtube.com/channel/UCEJ8IRbmEl3tEZahc17pwrw
     """
-ini = 5
-for i in range (ini,ini+1):
+ini = 1
+for i in range (ini,ini+6):
 
 # i = 1
     matchTemplate("temp"+str(i)+".png")
