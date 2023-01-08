@@ -24,12 +24,12 @@ def checkTemplatesMatch(savedTemplates, template):
 def cropBordersFromMarginValue(template):
     margin = 5
     shape = template.shape
-    cropped_image_no_margin = template[margin:shape[0] - margin, margin:shape[1] - margin]
+    croppedImage = template[margin:shape[0] - margin, margin:shape[1] - margin]
 
-    return cropped_image_no_margin
+    return croppedImage
 
 
-def cropBordersFromTemplate(template):
+def cropGridBordersFromTemplate(template):
     dst = cv2.Canny(template, 50, 200, None, 3)
 
     shape = dst.shape
@@ -70,10 +70,10 @@ def cropBordersFromTemplate(template):
 
     templateCopy = template.copy()
     margin = 4
-    cropped_image_no_margin = templateCopy[xSmaller[-1] + margin:xGreater[0] - margin,
+    croppedImage = templateCopy[xSmaller[-1] + margin:xGreater[0] - margin,
                               ySmaller[-1] + margin:yGreater[0] - margin]
 
-    return cropped_image_no_margin
+    return croppedImage
 
 
 def findTemplateImages():
@@ -100,15 +100,15 @@ def findTemplateImages():
             try:
 
                 # crop template
-                cropped_image_no_margin = image_copy[x - margin:x + gridSize + margin, y - margin:y + gridSize + margin]
-                cropped_image = cropBordersFromTemplate(cropped_image_no_margin.copy())
-                # cropped_image = cropBordersFromMarginValue(cropped_image_no_margin.copy())
+                croppedImage = image_copy[x - margin:x + gridSize + margin, y - margin:y + gridSize + margin]
+                croppedImageNoGrid = cropGridBordersFromTemplate(croppedImage.copy())
+                # croppedImageNoGrid = cropBordersFromMarginValue(croppedImage.copy())
 
-                if np.mean(cropped_image) >= 250:
+                if np.mean(croppedImageNoGrid) >= 250:
                     continue
-                if cropped_image.shape[0] < gridSize / 2 or cropped_image.shape[1] < gridSize / 2:
+                if croppedImageNoGrid.shape[0] < gridSize / 2 or croppedImageNoGrid.shape[1] < gridSize / 2:
                     continue
-                cv2.imwrite("cropped.png", cropped_image)
+                cv2.imwrite("cropped.png", croppedImageNoGrid)
 
                 template = cv2.imread('cropped.png', 0)
 
@@ -139,9 +139,9 @@ def findTemplateImages():
                                       -1)
                     if isCopy:
                         continue
-                    savedTemplates.append(cropped_image_no_margin)
+                    savedTemplates.append(croppedImage)
                     cv2.imwrite(dirName + "/templates/template" + str(templateCounter) + ".png",
-                                cropped_image)
+                                croppedImageNoGrid)
                     cv2.imwrite(dirName + "/filled/template" + str(templateCounter) + "-filled.png", imgRGB)
 
                     templateCounter += 1
