@@ -58,7 +58,7 @@ def matchTemplate(fileName):
     # and convert it from BGR to GRAY
     imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    template = cv2.imread('templates/' + fileName, 0)
+    template = cv2.imread('templates/sunflower/' + fileName, 0)
 
     # then we get the shape of the template
     w, h = template.shape[::-1]
@@ -87,11 +87,11 @@ def matchTemplate(fileName):
     for pt in newPoints:
         f.write(" ".join([str(index), str(pt[0] + w / 2), str(pt[1] + h / 2)]) + '\n')
         index += 1
-        # cv2.rectangle(imgRGB,
-        #               pt,
-        #               (pt[0] + w, pt[1] + h),
-        #               (230, 0, 255),
-        #               1)
+        cv2.rectangle(imgRGB,
+                      pt,
+                      (pt[0] + w, pt[1] + h),
+                      (230, 0, 255),
+                      1)
     f.write("EOF" + '\n')
     f.close()
     problem = TSP(tspFileName)
@@ -104,7 +104,7 @@ def matchTemplate(fileName):
     plt.close('all')
 
 
-entries = os.listdir('templates/')
+entries = os.listdir('templates/sunflower')
 
 for entry in entries:
     matchTemplate(entry)
