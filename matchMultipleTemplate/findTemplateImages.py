@@ -3,96 +3,105 @@ import gridDetection
 
 import cv2
 import numpy as np
-import os
-from matplotlib import pyplot as plt
 
 
-def checkTemplatesMatch(savedTemplates, template):
-    for tmp in savedTemplates:
-        # tmpImg = cv2.imread(dirName + "/templates/" + tmp)
-        tmpImgGray = cv2.cvtColor(tmp, cv2.COLOR_BGR2GRAY)
-        check = cv2.matchTemplate(tmpImgGray,
-                                  template,
+def check_templates_match(templates_list, image):
+    """
+    check if a image matches any template in a list
+    """
+    for tmp in templates_list:
+        template_img_gray = cv2.cvtColor(tmp, cv2.COLOR_BGR2GRAY)
+        check = cv2.matchTemplate(template_img_gray,
+                                  image,
                                   cv2.TM_CCOEFF_NORMED)
         threshold = 0.9
-        locTemplates = np.where(check >= threshold)
-        if len(list(zip(*locTemplates[::-1]))) > 0:
+        loc = np.where(check >= threshold)
+        if len(list(zip(*loc[::-1]))) > 0:
             return True
     return False
 
 
-def cropBordersFromMarginValue(template):
+def crop_borders_from_margin_value(template):
+    """
+    crop margins out of an image
+    """
     margin = 5
     shape = template.shape
-    croppedImage = template[margin:shape[0] - margin, margin:shape[1] - margin]
+    cropped_image = template[margin:shape[0] -
+                             margin, margin:shape[1] - margin]
 
-    return croppedImage
+    return cropped_image
 
 
-def cropGridBordersFromTemplate(template):
+def crop_grid_borders_from_template(template):
+    """
+    crop margins out of an image based on grid lines
+    """
     dst = cv2.Canny(template, 50, 200, None, 3)
-
+    if dst is None:
+        return template
     shape = dst.shape
-    gridSize = shape[0]
-    lines = cv2.HoughLines(dst, 1, np.pi / 180, 25, gridSize * 2, 0, 0)
-    xLines = []
-    yLines = []
+    grid_size = shape[0]
+    lines = cv2.HoughLines(dst, 1, np.pi / 180, 25, grid_size * 2, 0, 0)
+    x_lines = [0, grid_size]
+    y_lines = [0, grid_size]
     if lines is not None:
-        for i in range(0, len(lines)):
-            rho = lines[i][0][0]
-            theta = lines[i][0][1]
+        for line in lines:
+            rho, theta = line[0]
             a = math.cos(theta)
             b = math.sin(theta)
             x0 = a * rho
             y0 = b * rho
             pt1 = (int(x0 + 1000 * (-b)), int(y0 + 1000 * (a)))
             pt2 = (int(x0 - 1000 * (-b)), int(y0 - 1000 * (a)))
-            thetaDegrees = math.degrees(theta)
-            if math.fabs(180 - thetaDegrees) < 5 or math.fabs(thetaDegrees) < 5:
-                newX = math.floor((pt1[0] + pt2[0]) / 2)
-                yLines.append(newX)
-            elif math.fabs(90 - thetaDegrees) < 5:
-                newY = math.floor((pt1[1] + pt2[1]) / 2)
-                xLines.append(newY)
+            theta_degrees = math.degrees(theta)
 
-    xLines.append(0)
-    xLines.append(gridSize)
-    xLines.sort()
+            if abs(180 - theta_degrees) < 5 or abs(theta_degrees) < 5:
+                new_x = math.floor((pt1[0] + pt2[0]) / 2)
+                y_lines.append(new_x)
+            elif abs(90 - theta_degrees) < 5:
+                new_y = math.floor((pt1[1] + pt2[1]) / 2)
+                x_lines.append(new_y)
 
-    yLines.append(0)
-    yLines.append(gridSize)
-    yLines.sort()
-    cutPoint = gridSize / 2
-    y = np.array(xLines)
-    xSmaller, xGreater = y[y < cutPoint - gridSize / 4], y[y > cutPoint + gridSize / 4]
-    y = np.array(yLines)
-    ySmaller, yGreater = y[y < cutPoint], y[y > cutPoint]
+    x_lines.sort()
 
-    templateCopy = template.copy()
+    y_lines.sort()
+    halfway_point = grid_size / 2
+    x = np.array(x_lines)
+    x_smaller, x_greater = x[x < halfway_point -
+                             grid_size / 4], x[x > halfway_point + grid_size / 4]
+    y = np.array(y_lines)
+    y_smaller, y_greater = y[y < halfway_point -
+                             grid_size / 4], y[y > halfway_point + grid_size / 4]
+
+    template_copy = template.copy()
     margin = 4
-    croppedImage = templateCopy[xSmaller[-1] + margin:xGreater[0] - margin,
-                              ySmaller[-1] + margin:yGreater[0] - margin]
+    cropped_image = template_copy[x_smaller[-1] + margin:x_greater[0] - margin,
+                                  y_smaller[-1] + margin:y_greater[0] - margin]
 
-    return croppedImage
+    return cropped_image
 
 
-def findTemplateImages():
-    dirName = "heart"
-    filename = dirName + "/img.png"
+def find_template_images():
+    """
+    Find template images on cross stich pattern
+    """
+    dir_name = "starryNight"
+    filename = dir_name + "/img.png"
     src = cv2.imread(filename)
-    imgRGB = cv2.cvtColor(src, cv2.COLOR_BGR2RGB)
+    img_RGB = cv2.cvtColor(src, cv2.COLOR_BGR2RGB)
     # and convert it from BGR to GRAY
-    imgGray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
+    img_gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
 
     # get coordinates of grid from file
-    coords = gridDetection.gridCoordinates(filename)
-    gridSize = coords[2]
-    templateCounter = 0
-    savedTemplates = []
-    for hcoord in coords[0]:
-        for vcoord in coords[1]:
-            y = vcoord
-            x = hcoord
+    coords = gridDetection.grid_coordinates(filename)
+    grid_size = coords[2]
+    template_counter = 0
+    saved_templates = []
+    for h_coord in coords[0]:
+        for v_coor in coords[1]:
+            y = v_coor
+            x = h_coord
             margin = 4
 
             image_copy = src.copy()
@@ -100,22 +109,24 @@ def findTemplateImages():
             try:
 
                 # crop template
-                croppedImage = image_copy[x - margin:x + gridSize + margin, y - margin:y + gridSize + margin]
-                croppedImageNoGrid = cropGridBordersFromTemplate(croppedImage.copy())
-                # croppedImageNoGrid = cropBordersFromMarginValue(croppedImage.copy())
+                croppeed_image = image_copy[x - margin:x + grid_size +
+                                            margin, y - margin:y + grid_size + margin]
+                croppeed_image_no_grid = crop_grid_borders_from_template(
+                    croppeed_image.copy())
+                # croppeed_image_no_grid = crop_borders_from_margin_value(croppeed_image.copy())
 
-                if np.mean(croppedImageNoGrid) >= 250:
+                if np.mean(croppeed_image_no_grid) >= 250:
                     continue
-                if croppedImageNoGrid.shape[0] < gridSize / 2 or croppedImageNoGrid.shape[1] < gridSize / 2:
+                if croppeed_image_no_grid.shape[0] < grid_size / 2 or croppeed_image_no_grid.shape[1] < grid_size / 2:
                     continue
-                cv2.imwrite("cropped.png", croppedImageNoGrid)
+                cv2.imwrite("cropped.png", croppeed_image_no_grid)
 
                 template = cv2.imread('cropped.png', 0)
 
                 # get template shape
                 w, h = template.shape
                 # So, we take our image, our template and the template matching method
-                res = cv2.matchTemplate(imgGray,
+                res = cv2.matchTemplate(img_gray,
                                         template,
                                         cv2.TM_CCOEFF_NORMED)
                 threshold = 0.9
@@ -124,30 +135,31 @@ def findTemplateImages():
 
                 if len(list(zip(*loc[::-1]))) > 0:
                     # check if template matches previous saved templates
-                    isCopy = checkTemplatesMatch(savedTemplates, template)
+                    isCopy = check_templates_match(saved_templates, template)
 
                     for pt in zip(*loc[::-1]):
-                        cv2.rectangle(imgRGB,
+                        cv2.rectangle(img_RGB,
                                       pt,
                                       (pt[0] + w, pt[1] + h),
                                       (0, 255, 255),
                                       -1)
-                        cv2.rectangle(imgGray,
+                        cv2.rectangle(img_gray,
                                       pt,
                                       (pt[0] + w, pt[1] + h),
                                       (0, 255, 255),
                                       -1)
                     if isCopy:
                         continue
-                    savedTemplates.append(croppedImage)
-                    cv2.imwrite(dirName + "/templates/template" + str(templateCounter) + ".png",
-                                croppedImageNoGrid)
-                    cv2.imwrite(dirName + "/filled/template" + str(templateCounter) + "-filled.png", imgRGB)
+                    saved_templates.append(croppeed_image)
+                    cv2.imwrite(dir_name + "/templates/template" + str(template_counter) + ".png",
+                                croppeed_image_no_grid)
+                    cv2.imwrite(dir_name + "/filled/template" +
+                                str(template_counter) + "-filled.png", img_RGB)
 
-                    templateCounter += 1
+                    template_counter += 1
 
-            except cv2.error as e:
+            except cv2.error:
                 continue
 
 
-findTemplateImages()
+find_template_images()
