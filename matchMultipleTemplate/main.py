@@ -12,11 +12,9 @@ For this task we need two images - the first one with template and the second on
 So, let's start!
 """
 
-# traditionally, we start from importing libaries:
+import os
 import sys
 import itertools
-import math
-
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
@@ -25,10 +23,19 @@ sys.path.append('../geneticAlgorithm')
 
 from geneticAlgorithm.genetic_algorithm import genetic_algorithm
 from geneticAlgorithm.tsp import TSP
-# plt.style.use('ggplot')
 
 
-def drawPath(problem, permutation, shortestHamPath = True):
+def removeCoordinatesClose(input_list, threshold=(10, 10)):
+    combos = itertools.combinations(input_list, 2)
+    points_to_remove = [point2
+                        for point1, point2 in combos
+                        if
+                        abs(point1[0] - point2[0]) <= threshold[0] and abs(point1[1] - point2[1]) <= threshold[1]]
+    points_to_keep = [point for point in input_list if point not in points_to_remove]
+    return points_to_keep
+
+
+def drawPath(problem, permutation, shortestHamPath=True):
     coords = []
 
     splitPermutation = permutation.index(len(permutation) - 1)
@@ -36,91 +43,68 @@ def drawPath(problem, permutation, shortestHamPath = True):
     secondHalf = permutation[splitPermutation:]
     permutation = secondHalf + firstHalf
     for i in permutation:
-        if (problem.coords[i] != [-1, -1]):
+        if problem.coords[i] != [-1, -1]:
             coords.append(problem.coords[i])
     if not shortestHamPath:
         coords.append(problem.coords[permutation[0]])
     xs, ys = zip(*coords)  # create lists of x and y values
     plt.plot(xs, ys, marker='o')
 
-def matchTemplate (fileName):
-    # after that we read the target image
-    img = cv2.imread("img.png")
 
+def matchTemplate(fileName):
+    img = cv2.imread("img.png")
     # convert it from BGR to RGB
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
     # and convert it from BGR to GRAY
     imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # after that we read the template image
-
-    template = cv2.imread(fileName, 0)
+    template = cv2.imread('templates/' + fileName, 0)
 
     # then we get the shape of the template
     w, h = template.shape[::-1]
-
-    # And now we can apply the template matching.
-    # Remember, that the size of the template should
-    # be as much as possible the same, as it is size in the target image
 
     # So, we take our image, our template and the template matching method
     res = cv2.matchTemplate(imgGray,
                             template,
                             cv2.TM_CCOEFF_NORMED)
 
-    # Suppose we are searching for an object which has multiple occurrences.
-    # In that case, we will use thresholding.
-    # Let's make the threshold 0.7
     threshold = 0.9
-
     # then we get the locations, that have values bigger, than our threshold
     loc = np.where(res >= threshold)
-    # and we plot the rectangles around locations that are found
-    def process(input_list, threshold=(10, 10)):
-        combos = itertools.combinations(input_list, 2)
-        points_to_remove = [point2
-                            for point1, point2 in combos
-                            if
-                            abs(point1[0] - point2[0]) <= threshold[0] and abs(point1[1] - point2[1]) <= threshold[1]]
-        points_to_keep = [point for point in input_list if point not in points_to_remove]
-        return points_to_keep
 
-    newPoints = process(list(zip(*loc[::-1])))
+    # remove points too close to each other, likely the same image matched twice
+    newPoints = removeCoordinatesClose(list(zip(*loc[::-1])))
 
     tspFileName = "teste.tsp"
     f = open(tspFileName, "w")
 
-    f.write("NAME: " + fileName+'\n')
-    f.write("TYPE: TSP"+'\n')
-    f.write("DIMENSION: " + str(len(newPoints))+'\n')
-    f.write("EDGE_WEIGHT_TYPE: EUC_2D"+'\n')
-    f.write("NODE_COORD_SECTION"+'\n')
+    f.write("NAME: " + fileName + '\n')
+    f.write("TYPE: TSP" + '\n')
+    f.write("DIMENSION: " + str(len(newPoints)) + '\n')
+    f.write("EDGE_WEIGHT_TYPE: EUC_2D" + '\n')
+    f.write("NODE_COORD_SECTION" + '\n')
     index = 1
     for pt in newPoints:
-        f.write(" ".join([str(index), str(pt[0] + w/2), str(pt[1] + h/2)])+'\n')
-        index+=1
-        cv2.rectangle(imgRGB,
-                    pt,
-                    (pt[0]+w, pt[1]+h),
-                    (230, 0, 255),
-                    1)
-    f.write("EOF"+'\n')
+        f.write(" ".join([str(index), str(pt[0] + w / 2), str(pt[1] + h / 2)]) + '\n')
+        index += 1
+        # cv2.rectangle(imgRGB,
+        #               pt,
+        #               (pt[0] + w, pt[1] + h),
+        #               (230, 0, 255),
+        #               1)
+    f.write("EOF" + '\n')
     f.close()
     problem = TSP(tspFileName)
     path, history = genetic_algorithm(problem)
 
-    fig = plt.figure(figsize=(10,10))
+    fig = plt.figure(figsize=(10, 10))
     plt.imshow(imgRGB, alpha=0.4)
     drawPath(problem, path)
-    # plt.show()
-    plt.savefig('paths/'+fileName)
+    plt.savefig('paths/' + fileName)
+    plt.close('all')
 
-    """# ❤️ If you liked this video, please, make an upvote and subscribe to my channel!
-    # 🔗 https://www.youtube.com/channel/UCEJ8IRbmEl3tEZahc17pwrw
-    """
-ini = 1
-for i in range (ini,ini+6):
 
-# i = 1
-    matchTemplate("temp"+str(i)+".png")
+entries = os.listdir('templates/')
+
+for entry in entries:
+    matchTemplate(entry)
