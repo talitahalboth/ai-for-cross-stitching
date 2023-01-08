@@ -5,14 +5,14 @@ import cv2
 import numpy as np
 
 
-def check_templates_match(templates_list, image):
+def check_templates_match(image_list, template):
     """
-    check if a image matches any template in a list
+    check if a template matches any image in a list
     """
-    for tmp in templates_list:
+    for tmp in image_list:
         template_img_gray = cv2.cvtColor(tmp, cv2.COLOR_BGR2GRAY)
         check = cv2.matchTemplate(template_img_gray,
-                                  image,
+                                  template,
                                   cv2.TM_CCOEFF_NORMED)
         threshold = 0.9
         loc = np.where(check >= threshold)
@@ -32,19 +32,8 @@ def crop_borders_from_margin_value(template):
 
     return cropped_image
 
-
-def crop_grid_borders_from_template(template):
-    """
-    crop margins out of an image based on grid lines
-    """
-    dst = cv2.Canny(template, 50, 200, None, 3)
-    if dst is None:
-        return template
-    shape = dst.shape
-    grid_size = shape[0]
-    lines = cv2.HoughLines(dst, 1, np.pi / 180, 25, grid_size * 2, 0, 0)
-    x_lines = [0, grid_size]
-    y_lines = [0, grid_size]
+def find_grid_lines(lines, x_lines, y_lines):
+    """Find horizontal and vertical lines from HoughLines transformation"""
     if lines is not None:
         for line in lines:
             rho, theta = line[0]
@@ -63,10 +52,26 @@ def crop_grid_borders_from_template(template):
                 new_y = math.floor((pt1[1] + pt2[1]) / 2)
                 x_lines.append(new_y)
 
-    x_lines.sort()
 
-    y_lines.sort()
+
+def crop_grid_borders_from_template(template):
+    """
+    crop margins out of an image based on grid lines
+    """
+    dst = cv2.Canny(template, 50, 200, None, 3)
+    if dst is None:
+        return template
+    shape = dst.shape
+    grid_size = shape[0]
+    lines = cv2.HoughLines(dst, 1, np.pi / 180, 25, grid_size * 2, 0, 0)
+    x_lines = [0, grid_size]
+    y_lines = [0, grid_size]
+
     halfway_point = grid_size / 2
+    find_grid_lines(lines, x_lines, y_lines)
+
+    x_lines.sort()
+    y_lines.sort()
     x = np.array(x_lines)
     x_smaller, x_greater = x[x < halfway_point -
                              grid_size / 4], x[x > halfway_point + grid_size / 4]
@@ -80,6 +85,7 @@ def crop_grid_borders_from_template(template):
                     y_smaller[-1] + margin:y_greater[0] - margin]
 
     return cropped_image
+
 
 
 def find_template_images():
