@@ -12,16 +12,16 @@ We utilize OpenCV to detect the grid that forms the pattern. From this grid, we 
 
 The following pattern[[1]](#1)
 
-![image](https://user-images.githubusercontent.com/19466053/211222253-1566d43f-cc8f-4333-a706-ad4cf27d6d8e.png)
+<img src="https://user-images.githubusercontent.com/19466053/211228312-5c06968f-2e07-434e-bfcd-80ecbdae98d0.png " width=50% height=50%>
 
-Has 6 different symbols, indicating 6 differente colours, and these are the following:
 
-![template0](https://user-images.githubusercontent.com/19466053/211222243-1b584eb0-b1c1-4a98-bacb-8bda4dd725a7.png)
-![template1](https://user-images.githubusercontent.com/19466053/211222287-6f339ced-2447-4755-87ad-bd7fb42325bf.png)
-![template2](https://user-images.githubusercontent.com/19466053/211222292-7f66d457-923d-4c40-987f-693184653b91.png)
-![template3](https://user-images.githubusercontent.com/19466053/211222296-2d7e0222-964a-446b-ad70-5c7d18ea6356.png)
-![template4](https://user-images.githubusercontent.com/19466053/211222307-bdac91ad-d6df-4771-a65a-ba537021f7f8.png)
-![template5](https://user-images.githubusercontent.com/19466053/211222312-0e29427e-eecd-4926-bae1-64939c274784.png)
+Has 6 different symbols, indicating 5 differente colours, and these are represented by the following symbols:
+
+![template1](https://user-images.githubusercontent.com/19466053/211228280-a6a12506-2a43-4f55-9de8-6881fb90b714.png)
+![template2](https://user-images.githubusercontent.com/19466053/211228284-4f1b9f95-410d-487e-af25-276b79771635.png)
+![template3](https://user-images.githubusercontent.com/19466053/211228293-7874abc4-8d87-47fc-afba-72ee2102a975.png)
+![template4](https://user-images.githubusercontent.com/19466053/211228295-7f8f04de-bd31-4332-bf5c-f6c29ce51578.png)
+![template5](https://user-images.githubusercontent.com/19466053/211228297-6fef6fc1-b67c-4646-8bdb-fdfb53adb8fe.png)
 
 
 ### Finding colour of each stitch
@@ -30,9 +30,11 @@ Once again, we utilize OpenCV template matching to identify the coordinates of e
 
 ### Example:
 
-The blue path is the shortest path found by the genetic algorithm to pass through with that symbol.
+The blue path is the shortest path found by the genetic algorithm to pass through each points with the ![template1](https://user-images.githubusercontent.com/19466053/211228280-a6a12506-2a43-4f55-9de8-6881fb90b714.png)
+ symbol.
 
-![template0](https://user-images.githubusercontent.com/19466053/211222526-ec5648a8-3f06-447c-9aea-007dfc702ad8.png)
+<img src="https://user-images.githubusercontent.com/19466053/211228271-7602a11c-16a4-402e-9d00-8bbdd3e69941.png " width=50% height=50%>
+
 
 
 ## Path finding
@@ -64,7 +66,7 @@ The next generation is selected based on their aptitude, combining parents and c
 
 ## References
 <a id="1">[1]</a> 
-[DMC HEART - CROSS STITCH PATTERN](https://www.dmc.com/us/heart-cross-stitch-pattern-9012115.html)
+[DMC - ROCKET SHIP PATTERN](https://www.dmc.com/us/rocket-ship--pattern-9003993.html)
 
 
 <a id="2">[2]</a> 
