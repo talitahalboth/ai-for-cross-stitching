@@ -8,8 +8,8 @@ plt.style.use('ggplot')
 def ga_tests():
     instances = ['instances/berlin10.tsp', 'instances/berlin15.tsp', 'instances/berlin16.tsp']
     instances += ['instances/dj38.tsp', 'instances/berlin52.tsp', 'instances/eli51.tsp']
-    instances += ['instances/teste.tsp']
     instances = ['instances/rat783.tsp']
+    instances = ['instances/teste1.tsp']
     print('Executando Algoritmo Genético...')
     for instance in instances:
         problem = TSP(instance)

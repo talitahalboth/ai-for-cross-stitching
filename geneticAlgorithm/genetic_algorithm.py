@@ -140,15 +140,16 @@ def genetic_algorithm(problem, pop_size=50, max_gen=50):
                 best_permutation = individual.permutation
 
         if bestFitness != lastBest:
-            print("new best!")
-            utils.drawTour(problem, best_permutation, bestFitness, generations)
+            # print("new best!")
+            # print(bestFitness)
+            # utils.drawTour(problem, best_permutation, bestFitness, generations)
             lastBestGen = generations
 
             bestGens.append(generations)
         generations += 1
 
         fitness_history.append(bestThis)
-    utils.drawTour(problem, best_permutation, bestFitness, -1)
+    # utils.drawTour(problem, best_permutation, bestFitness, -1, problem.shortestHamiltonianPath)
     return best_permutation, fitness_history
 
 

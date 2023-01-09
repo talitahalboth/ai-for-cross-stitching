@@ -1,12 +1,15 @@
 import random
 import itertools
 
-shortestHamiltonianPath = True
+# shortestHamiltonianPath = False
 
 class TSP():
+    shortestHamiltonianPath = True
+
     def __init__(self, instance_file):
         self.fileName = instance_file
         self.__read_file(instance_file)
+        # self.shortestHamiltonianPath = False
 
     def __read_file(self, instance_file):
 
@@ -25,9 +28,9 @@ class TSP():
                     # use 0...n-1 representation instead of 1...n
                     coords[city - 1] = (coord_x, coord_y)
                     self.coords.append([coord_x, coord_y])
-        if (shortestHamiltonianPath):
-            self.coords.append([0, 0])
-            coords[self.size] = (0, 0)
+        if self.shortestHamiltonianPath:
+            self.coords.append([-1, -1])
+            coords[self.size] = (-1, -1)
             self.size+=1
         self.distance_matrix = [[0] * self.size for _ in range(self.size)]
 
@@ -36,10 +39,9 @@ class TSP():
             dist = round(dist)
             self.distance_matrix[i][j] = dist
             self.distance_matrix[j][i] = dist
-            if shortestHamiltonianPath and (i == self.size - 1 or j == self.size - 1):
+            if self.shortestHamiltonianPath and (i == self.size - 1 or j == self.size - 1):
                 self.distance_matrix[i][j] = 0
                 self.distance_matrix[j][i] = 0
-
 
     def __euclidean_dist(self, coords, i, j):
         return ((coords[i][0] - coords[j][0]) ** 2 + (coords[i][1] - coords[j][1]) ** 2) ** .5
