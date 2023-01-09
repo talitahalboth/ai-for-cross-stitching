@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 
 
 __DEBUG__ = False
+__DELETE_FILES__ = False
 
 def check_templates_match(image_list, template):
     """
@@ -113,16 +114,18 @@ def find_template_images(dir_name, verbose=False):
         # not present then create it.
         os.makedirs(dir_name + "/filled/")
     filedFilled = os.listdir(dir_name + "/filled/")
-    for f in filedFilled:
-        os.remove(dir_name + "/filled/" + f)
+    if(__DELETE_FILES__):
+        for f in filedFilled:   
+            os.remove(dir_name + "/filled/" + f)
 
     if not os.path.isdir(dir_name + "/templates/"):
         # if the demo_folder2 directory is
         # not present then create it.
         os.makedirs(dir_name + "/templates/")
     files = os.listdir(dir_name + "/templates/")
-    for f in files:
-        os.remove(dir_name + "/templates/" + f)
+    if(__DELETE_FILES__):
+        for f in files:
+            os.remove(dir_name + "/templates/" + f)
     filename = dir_name + "/img.png"
     src = cv2.imread(filename)
     img_RGB = cv2.cvtColor(src, cv2.COLOR_BGR2RGB)
@@ -134,7 +137,7 @@ def find_template_images(dir_name, verbose=False):
     # get coordinates of grid from file
     if verbose:
         print("Calculating grid coordinates")
-    coords = gridDetection.grid_coordinates(filename)
+    coords = gridDetection.grid_coordinates(filename, True)
     if verbose:
         print("DONE --- Calculating grid coordinates ")
     grid_size = coords[2]
@@ -216,6 +219,3 @@ def find_template_images(dir_name, verbose=False):
 
     if verbose:
         print("DONE --- Finding templates")
-directory = "rocket"
-
-find_template_images(directory)

@@ -1,12 +1,13 @@
 """
-@file hough_lines.py
-@brief This program demonstrates line finding with the Hough transform
+@file gridDetection.py
+@brief This program finds grid coordinates and cell sizes for a cross stitch pattern image
 """
 import statistics
 import itertools
-import cv2 as cv
+import cv2 
 import numpy as np
 from matplotlib import pyplot as plt
+from logger import log
 
 __DEBUG__ = False
 
@@ -19,14 +20,14 @@ def build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_line,
         while prev + 5 < cur:
             v_coords.append(prev)
             if __DEBUG__:
-                cv.line(cdst_p, (prev, 0),
-                        (prev, dimensions[0]), rgb, lineWidth, cv.LINE_AA)
+                cv2.line(cdst_p, (prev, 0),
+                        (prev, dimensions[0]), rgb, lineWidth, cv2.LINE_AA)
             prev += h_mode
         v_coords.append(cur)
 
         if __DEBUG__:
-            cv.line(cdst_p, (cur, 0),
-                    (cur, dimensions[0]), rgb, lineWidth, cv.LINE_AA)
+            cv2.line(cdst_p, (cur, 0),
+                    (cur, dimensions[0]), rgb, lineWidth, cv2.LINE_AA)
 
 
 def build_grid_coordinates_h_arrays(cdst_p, dimensions, h_coords, h_lines, h_mode, rgb,lineWidth):
@@ -38,13 +39,13 @@ def build_grid_coordinates_h_arrays(cdst_p, dimensions, h_coords, h_lines, h_mod
         while prev + 5 < cur:
             h_coords.append(prev)
             if __DEBUG__:
-                cv.line(cdst_p, (0, prev),
-                        (dimensions[1], prev), rgb, lineWidth, cv.LINE_AA)
+                cv2.line(cdst_p, (0, prev),
+                        (dimensions[1], prev), rgb, lineWidth, cv2.LINE_AA)
             prev += h_mode
         h_coords.append(cur)
         if __DEBUG__:
-            cv.line(cdst_p, (0, cur),
-                    (dimensions[1], cur), rgb, lineWidth, cv.LINE_AA)
+            cv2.line(cdst_p, (0, cur),
+                    (dimensions[1], cur), rgb, lineWidth, cv2.LINE_AA)
 
 
 def build_grid_lines_array(dimensions, h_lines, linesP, v_line):
@@ -75,28 +76,31 @@ def remove_coordinates_close(input_list, threshold=(5, 5)):
     return points_to_keep
 
 
-def grid_coordinates(argv):
+def grid_coordinates(dir_name, verbose=False):
     """
     Finds coordinates of a grid
     """
+    if verbose:
+        log("Finding grid coordinates", "verbose")
+
     default_file = 'sunflower/img.png'
-    filename = argv if len(argv) > 0 else default_file
+    filename = dir_name if len(dir_name) > 0 else default_file
     # Loads an image
-    src = cv.imread(cv.samples.findFile(filename))
+    src = cv2.imread(cv2.samples.findFile(filename))
     # Check if image is loaded fine
     if src is None:
-        print('Error opening image!')
-        print(
-            'Usage: hough_lines.py [image_name -- default ' + default_file + '] \n')
+        log('Error opening image!', "ERROR")
+        log(
+            'Usage: hough_lines.py [image_name -- default ' + default_file + '] \n', "ERROR")
         return -1
 
-    dst = cv.Canny(src, 50, 200, None, 3)
+    dst = cv2.Canny(src, 50, 200, None, 3)
 
     # Copy edges to the images that will display the results in BGR
-    cdst = cv.cvtColor(dst, cv.COLOR_GRAY2BGR)
+    cdst = cv2.cvtColor(dst, cv2.COLOR_GRAY2BGR)
     cdst_p = np.copy(cdst)
     shape = src.shape
-    linesP = cv.HoughLinesP(dst, rho=2, theta=np.pi / 180,
+    linesP = cv2.HoughLinesP(dst, rho=2, theta=np.pi / 180,
                             threshold=50, lines=None, minLineLength=shape[0]/10, maxLineGap=shape[0]/100)
 
     h_lines = []
@@ -125,28 +129,31 @@ def grid_coordinates(argv):
     h_mode = statistics.mode(h_diff)
     ini_h = h_lines[0][1]
     rgb = (0,255,0)
-    cv.line(cdst_p, (0, ini_h),
-            (dimensions[1], ini_h), rgb, 4, cv.LINE_AA)
+    line_width = 8
+    if __DEBUG__:
+        cv2.line(cdst_p, (0, ini_h),
+            (dimensions[1], ini_h), rgb, 4, cv2.LINE_AA)
 
     h_coords = [ini_h]
-    build_grid_coordinates_h_arrays(cdst_p, dimensions, h_coords, h_lines, h_mode,rgb, 8)
+    build_grid_coordinates_h_arrays(cdst_p, dimensions, h_coords, h_lines, h_mode, rgb, line_width)
 
     ini_v = h_lines[0][0]
-    cv.line(cdst_p, (ini_v, 0),
-            (ini_v, dimensions[0]), rgb, 4, cv.LINE_AA)
+    if __DEBUG__:
+        cv2.line(cdst_p, (ini_v, 0),
+            (ini_v, dimensions[0]), rgb, 4, cv2.LINE_AA)
 
     v_coords = [ini_v]
     rgb = (0,0,255)
-    build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_line,rgb, 8)
+    build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_line, rgb, line_width)
 
+    if verbose:
+        log("DONE --- Found grid coordinates", "verbose")
     if __DEBUG__:
         fig = plt.figure(figsize=(10, 10))
         plt.imshow(cdst_p, alpha=0.6)
         plt.show()
-        # cv.imshow("Detected Lines (in red) - Probabilistic Line Transform", cdst_p)
-        # cv.waitKey()
+        # cv2.imshow("Detected Lines (in red) - Probabilistic Line Transform", cdst_p)
+        # cv2.waitKey()
 
     return h_coords, v_coords, h_mode
 
-# if __name__ == "__main__":
-#     grid_coordinates(sys.argv[1:])

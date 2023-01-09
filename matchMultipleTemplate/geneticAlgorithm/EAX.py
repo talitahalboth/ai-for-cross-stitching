@@ -2,7 +2,7 @@ import random
 import numpy as np
 
 # check if a path forms  an AB cycle
-from individual import Individual
+from geneticAlgorithm.individual import Individual
 
 
 def isABcycle(path, size):

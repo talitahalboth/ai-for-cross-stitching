@@ -1,11 +1,11 @@
 import random
 
-import utils
-from EAX import eax
-from individual import Individual
-from tsp import TSP
+import geneticAlgorithm.utils
+from geneticAlgorithm.EAX import eax
+from geneticAlgorithm.individual import Individual
+from geneticAlgorithm.tsp import TSP
 # from EAX import eax
-from tournamentSelection import tournamentSelection
+from geneticAlgorithm.tournamentSelection import tournamentSelection
 
 random.seed(120)
 
