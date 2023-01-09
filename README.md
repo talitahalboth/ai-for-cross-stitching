@@ -28,7 +28,7 @@ Has 6 different symbols, indicating 5 differente colours, and these are represen
 
 Once again, we utilize OpenCV template matching to identify the coordinates of each colour. These coordinates will form the path that we follow when cross stitching each colour.
 
-### Example:
+#### Example:
 
 The blue path is the shortest path found by the genetic algorithm to pass through each points with the ![template1](https://user-images.githubusercontent.com/19466053/211228280-a6a12506-2a43-4f55-9de8-6881fb90b714.png)
  symbol.
