@@ -6,11 +6,12 @@ import statistics
 import itertools
 import cv2 as cv
 import numpy as np
+from matplotlib import pyplot as plt
 
 __DEBUG__ = False
 
 
-def build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_line):
+def build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_line, rgb,lineWidth):
     """Build array of vertical coordinates from grid"""
     for i in range(1, len(v_line)):
         prev = v_line[i - 1][0] + h_mode
@@ -19,30 +20,31 @@ def build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_line)
             v_coords.append(prev)
             if __DEBUG__:
                 cv.line(cdst_p, (prev, 0),
-                        (prev, dimensions[0]), (0, 255, 0), 2, cv.LINE_AA)
+                        (prev, dimensions[0]), rgb, lineWidth, cv.LINE_AA)
             prev += h_mode
         v_coords.append(cur)
 
         if __DEBUG__:
             cv.line(cdst_p, (cur, 0),
-                    (cur, dimensions[0]), (0, 255, 0), 2, cv.LINE_AA)
+                    (cur, dimensions[0]), rgb, lineWidth, cv.LINE_AA)
 
 
-def build_grid_coordinates_h_arrays(cdst_p, dimensions, h_coords, h_lines, h_mode):
+def build_grid_coordinates_h_arrays(cdst_p, dimensions, h_coords, h_lines, h_mode, rgb,lineWidth):
     """Build array of horizontal coordinates from grid"""
     for i in range(1, len(h_lines)):
         prev = h_lines[i - 1][1] + h_mode
         cur = h_lines[i][1]
+
         while prev + 5 < cur:
             h_coords.append(prev)
             if __DEBUG__:
                 cv.line(cdst_p, (0, prev),
-                        (dimensions[1], prev), (0, 0, 255), 2, cv.LINE_AA)
+                        (dimensions[1], prev), rgb, lineWidth, cv.LINE_AA)
             prev += h_mode
         h_coords.append(cur)
         if __DEBUG__:
             cv.line(cdst_p, (0, cur),
-                    (dimensions[1], cur), (0, 0, 255), 2, cv.LINE_AA)
+                    (dimensions[1], cur), rgb, lineWidth, cv.LINE_AA)
 
 
 def build_grid_lines_array(dimensions, h_lines, linesP, v_line):
@@ -93,9 +95,9 @@ def grid_coordinates(argv):
     # Copy edges to the images that will display the results in BGR
     cdst = cv.cvtColor(dst, cv.COLOR_GRAY2BGR)
     cdst_p = np.copy(cdst)
-
+    shape = src.shape
     linesP = cv.HoughLinesP(dst, rho=2, theta=np.pi / 180,
-                            threshold=50, lines=None, minLineLength=100, maxLineGap=2)
+                            threshold=50, lines=None, minLineLength=shape[0]/10, maxLineGap=shape[0]/100)
 
     h_lines = []
     v_line = []
@@ -122,22 +124,27 @@ def grid_coordinates(argv):
     h_diff.sort()
     h_mode = statistics.mode(h_diff)
     ini_h = h_lines[0][1]
+    rgb = (0,255,0)
     cv.line(cdst_p, (0, ini_h),
-            (dimensions[1], ini_h), (0, 0, 255), 2, cv.LINE_AA)
+            (dimensions[1], ini_h), rgb, 4, cv.LINE_AA)
 
     h_coords = [ini_h]
-    build_grid_coordinates_h_arrays(cdst_p, dimensions, h_coords, h_lines, h_mode)
+    build_grid_coordinates_h_arrays(cdst_p, dimensions, h_coords, h_lines, h_mode,rgb, 8)
 
     ini_v = h_lines[0][0]
     cv.line(cdst_p, (ini_v, 0),
-            (ini_v, dimensions[0]), (0, 255, 0), 2, cv.LINE_AA)
+            (ini_v, dimensions[0]), rgb, 4, cv.LINE_AA)
 
     v_coords = [ini_v]
-    build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_line)
+    rgb = (0,0,255)
+    build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_line,rgb, 8)
 
     if __DEBUG__:
-        cv.imshow("Detected Lines (in red) - Probabilistic Line Transform", cdst_p)
-        cv.waitKey()
+        fig = plt.figure(figsize=(10, 10))
+        plt.imshow(cdst_p, alpha=0.6)
+        plt.show()
+        # cv.imshow("Detected Lines (in red) - Probabilistic Line Transform", cdst_p)
+        # cv.waitKey()
 
     return h_coords, v_coords, h_mode
 

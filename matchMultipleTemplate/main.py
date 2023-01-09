@@ -104,7 +104,7 @@ def matchTemplate(fileName, dir_name):
     plt.close('all')
 
 
-directory = "starryNight"
+directory = "rocket"
 entries = os.listdir(directory + "/templates/")
 
 if not os.path.isdir(directory + "/paths/"):
@@ -113,7 +113,7 @@ if not os.path.isdir(directory + "/paths/"):
     os.makedirs(directory + "/paths/")
 files = os.listdir(directory + "/paths/")
 for f in files:
-    os.remove(f)
+    os.remove(directory + "/paths/"+f)
 
 for entry in entries:
     matchTemplate(entry, directory)
