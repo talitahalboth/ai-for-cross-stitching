@@ -51,14 +51,14 @@ def drawPath(problem, permutation, shortestHamPath=True):
     plt.plot(xs, ys, marker='o')
 
 
-def matchTemplate(fileName):
-    img = cv2.imread("img.png")
+def matchTemplate(fileName, dir_name):
+    img = cv2.imread(dir_name+"/img.png")
     # convert it from BGR to RGB
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     # and convert it from BGR to GRAY
     imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    template = cv2.imread('templates/sunflower/' + fileName, 0)
+    template = cv2.imread(dir_name+"/templates/"+fileName, 0)
 
     # then we get the shape of the template
     w, h = template.shape[::-1]
@@ -100,11 +100,20 @@ def matchTemplate(fileName):
     fig = plt.figure(figsize=(10, 10))
     plt.imshow(imgRGB, alpha=0.4)
     drawPath(problem, path)
-    plt.savefig('paths/' + fileName)
+    plt.savefig(dir_name+'/paths/' + fileName)
     plt.close('all')
 
 
-entries = os.listdir('templates/sunflower')
+directory = "starryNight"
+entries = os.listdir(directory + "/templates/")
+
+if not os.path.isdir(directory + "/paths/"):
+    # if the demo_folder2 directory is
+    # not present then create it.
+    os.makedirs(directory + "/paths/")
+files = os.listdir(directory + "/paths/")
+for f in files:
+    os.remove(f)
 
 for entry in entries:
-    matchTemplate(entry)
+    matchTemplate(entry, directory)

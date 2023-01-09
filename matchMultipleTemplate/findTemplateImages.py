@@ -1,5 +1,6 @@
 import math
 import gridDetection
+import os
 
 import cv2
 import numpy as np
@@ -32,6 +33,7 @@ def crop_borders_from_margin_value(template):
 
     return cropped_image
 
+
 def find_grid_lines(lines, x_lines, y_lines):
     """Find horizontal and vertical lines from HoughLines transformation"""
     if lines is not None:
@@ -51,7 +53,6 @@ def find_grid_lines(lines, x_lines, y_lines):
             elif abs(90 - theta_degrees) < 5:
                 new_y = math.floor((pt1[1] + pt2[1]) / 2)
                 x_lines.append(new_y)
-
 
 
 def crop_grid_borders_from_template(template):
@@ -81,11 +82,11 @@ def crop_grid_borders_from_template(template):
 
     template_copy = template.copy()
     margin = 4
-    cropped_image = template_copy[x_smaller[-1] + margin:x_greater[0] - margin,
+    cropped_image = template_copy[
+                    x_smaller[-1] + margin:x_greater[0] - margin,
                     y_smaller[-1] + margin:y_greater[0] - margin]
 
     return cropped_image
-
 
 
 def find_template_images():
@@ -155,6 +156,13 @@ def find_template_images():
                     if isCopy:
                         continue
                     saved_templates.append(cropped_image)
+                    if not os.path.isdir(dir_name + "/templates/"):
+                        # if the demo_folder2 directory is 
+                        # not present then create it.
+                        os.makedirs(dir_name + "/templates/")
+                    files = os.listdir(dir_name + "/templates/")
+                    for f in files:
+                        os.remove(f)
                     cv2.imwrite(dir_name + "/templates/template" + str(template_counter) + ".png",
                                 cropped_image_no_grid)
                     cv2.imwrite(dir_name + "/filled/template" +
