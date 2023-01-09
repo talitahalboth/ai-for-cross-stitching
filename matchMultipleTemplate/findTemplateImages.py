@@ -9,7 +9,6 @@ from matplotlib import pyplot as plt
 
 __DEBUG__ = False
 
-
 def check_templates_match(image_list, template):
     """
     check if a template matches any image in a list
@@ -104,11 +103,10 @@ def crop_grid_borders_from_template(template):
     return cropped_image
 
 
-def find_template_images():
+def find_template_images(dir_name, verbose=False):
     """
     Find template images on cross stich pattern
     """
-    dir_name = "rocket"
 
     if not os.path.isdir(dir_name + "/filled/"):
         # if the demo_folder2 directory is
@@ -134,10 +132,17 @@ def find_template_images():
     img_gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
 
     # get coordinates of grid from file
+    if verbose:
+        print("Calculating grid coordinates")
     coords = gridDetection.grid_coordinates(filename)
+    if verbose:
+        print("DONE --- Calculating grid coordinates ")
     grid_size = coords[2]
     template_counter = 1
     saved_templates = []
+
+    if verbose:
+        print("Finding templates")
     for h_coord in coords[0]:
         for v_coord in coords[1]:
             y = v_coord
@@ -150,17 +155,17 @@ def find_template_images():
                 # crop template
                 cropped_image = image_copy[x - margin:x + grid_size + margin, y - margin:y + grid_size + margin]
 
+                # cropped_image_no_grid = crop_borders_from_margin_value(cropped_image.copy())
                 cropped_image_no_grid = crop_grid_borders_from_template(
                     cropped_image.copy())
 
 
-                # if __DEBUG__:
-                #     plt.clf()
-                #
-                #     fig = plt.figure(figsize=(10, 10))
-                #     plt.imshow(cropped_image_no_grid)
-                #     plt.show()
-                # cropped_image_no_grid = crop_borders_from_margin_value(cropped_image.copy())
+                if __DEBUG__:
+                    plt.clf()
+
+                    fig = plt.figure(figsize=(10, 10))
+                    plt.imshow(cropped_image_no_grid)
+                    plt.show()
 
                 if np.mean(cropped_image_no_grid) >= 250:
                     continue
@@ -209,5 +214,8 @@ def find_template_images():
             except cv2.error:
                 continue
 
+    if verbose:
+        print("DONE --- Finding templates")
+directory = "rocket"
 
-find_template_images()
+find_template_images(directory)
