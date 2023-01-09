@@ -25,8 +25,12 @@ def normalizeFitness(problem, population):
     fitnessArray = []
     for i in range(len(population)):
         # invert the fitness, so a longer path becomes a smaller fitness
-        fitnessArray.append(1 / problem.evaluate(population[i].permutation))
-        population[i].fitness = 1 / problem.evaluate(population[i].permutation)
+        if problem.evaluate(population[i].permutation) == 0:
+            fitnessArray.append(1)
+            population[i].fitness = 1
+        else:
+            fitnessArray.append(1 / problem.evaluate(population[i].permutation))
+            population[i].fitness = 1 / problem.evaluate(population[i].permutation)
     soma2 = 0.0
     for individual in population:
         soma2 += individual.fitness

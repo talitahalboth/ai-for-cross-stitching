@@ -51,7 +51,9 @@ def drawPath(problem, permutation, shortestHamPath=True):
     plt.plot(xs, ys, marker='o')
 
 
-def matchTemplate(fileName, dir_name):
+def matchTemplate(fileName, dir_name, verbose=False):
+    if verbose:
+        print("Matching template")
     img = cv2.imread(dir_name+"/img.png")
     # convert it from BGR to RGB
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -72,6 +74,8 @@ def matchTemplate(fileName, dir_name):
     # then we get the locations, that have values bigger, than our threshold
     loc = np.where(res >= threshold)
 
+    if verbose:
+        print("DONE -- Matching template")
     # remove points too close to each other, likely the same image matched twice
     newPoints = removeCoordinatesClose(list(zip(*loc[::-1])))
 
@@ -95,7 +99,12 @@ def matchTemplate(fileName, dir_name):
     f.write("EOF" + '\n')
     f.close()
     problem = TSP(tspFileName)
+
+    if verbose:
+        print("Calculating path")
     path, history = genetic_algorithm(problem)
+    if verbose:
+        print("DONE -- Calculating path")
 
     fig = plt.figure(figsize=(10, 10))
     plt.imshow(imgRGB, alpha=0.4)
@@ -104,16 +113,23 @@ def matchTemplate(fileName, dir_name):
     plt.close('all')
 
 
-directory = "rocket"
-entries = os.listdir(directory + "/templates/")
+def templateMatching(directory="rocket", verbose=False):
+    entries = os.listdir(directory + "/templates/")
 
-if not os.path.isdir(directory + "/paths/"):
-    # if the demo_folder2 directory is
-    # not present then create it.
-    os.makedirs(directory + "/paths/")
-files = os.listdir(directory + "/paths/")
-for f in files:
-    os.remove(directory + "/paths/"+f)
+    if not os.path.isdir(directory + "/paths/"):
+        # if the demo_folder2 directory is
+        # not present then create it.
+        os.makedirs(directory + "/paths/")
+    files = os.listdir(directory + "/paths/")
+    for f in files:
+        os.remove(directory + "/paths/"+f)
 
-for entry in entries:
-    matchTemplate(entry, directory)
+    for entry in entries:
+        matchTemplate(entry, directory, verbose)
+
+
+if __name__ == "__main__":
+    directory = "et"
+    # find_template_images(directory)
+    templateMatching(directory, True)
+
