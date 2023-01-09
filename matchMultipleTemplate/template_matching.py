@@ -23,6 +23,7 @@ sys.path.append('../geneticAlgorithm')
 
 from geneticAlgorithm.genetic_algorithm import genetic_algorithm
 from geneticAlgorithm.tsp import TSP
+from logger import log
 
 
 __DELETE_FILES__ = False
@@ -54,8 +55,7 @@ def drawPath(problem, permutation, shortestHamPath=True):
 
 
 def matchTemplate(fileName, dir_name, verbose=False):
-    if verbose:
-        print("Matching template")
+    log("Matching template", "verbose")
     img = cv2.imread(dir_name+"/img.png")
     # convert it from BGR to RGB
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -76,8 +76,7 @@ def matchTemplate(fileName, dir_name, verbose=False):
     # then we get the locations, that have values bigger, than our threshold
     loc = np.where(res >= threshold)
 
-    if verbose:
-        print("DONE -- Matching template")
+    log("DONE -- Matching template", "verbose")
     # remove points too close to each other, likely the same image matched twice
     newPoints = removeCoordinatesClose(list(zip(*loc[::-1])))
 
@@ -102,11 +101,9 @@ def matchTemplate(fileName, dir_name, verbose=False):
     f.close()
     problem = TSP(tspFileName)
 
-    if verbose:
-        print("Calculating path")
+    log("Calculating path", "verbose")
     path, history = genetic_algorithm(problem)
-    if verbose:
-        print("DONE -- Calculating path")
+    log("DONE -- Calculating path", "verbose")
 
     fig = plt.figure(figsize=(10, 10))
     plt.imshow(imgRGB, alpha=0.4)

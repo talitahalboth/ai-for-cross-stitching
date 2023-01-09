@@ -9,7 +9,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from logger import log
 
-__DEBUG__ = False
+__DEBUG__ = True
 
 
 def build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_line, rgb,lineWidth):
@@ -80,8 +80,7 @@ def grid_coordinates(dir_name, verbose=False):
     """
     Finds coordinates of a grid
     """
-    if verbose:
-        log("Finding grid coordinates", "verbose")
+    log("Finding grid coordinates", "verbose")
 
     default_file = 'sunflower/img.png'
     filename = dir_name if len(dir_name) > 0 else default_file
@@ -127,6 +126,7 @@ def grid_coordinates(dir_name, verbose=False):
 
     h_diff.sort()
     h_mode = statistics.mode(h_diff)
+    log(h_mode, "DEBUG")
     ini_h = h_lines[0][1]
     rgb = (0,255,0)
     line_width = 8
@@ -146,8 +146,7 @@ def grid_coordinates(dir_name, verbose=False):
     rgb = (0,0,255)
     build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_line, rgb, line_width)
 
-    if verbose:
-        log("DONE --- Found grid coordinates", "verbose")
+    log("DONE --- Found grid coordinates", "verbose")
     if __DEBUG__:
         fig = plt.figure(figsize=(10, 10))
         plt.imshow(cdst_p, alpha=0.6)

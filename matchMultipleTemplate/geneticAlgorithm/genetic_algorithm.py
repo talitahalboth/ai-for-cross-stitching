@@ -6,6 +6,7 @@ from geneticAlgorithm.individual import Individual
 from geneticAlgorithm.tsp import TSP
 # from EAX import eax
 from geneticAlgorithm.tournamentSelection import tournamentSelection
+from logger import log
 
 random.seed(120)
 
@@ -129,7 +130,7 @@ def genetic_algorithm(problem, pop_size=50, max_gen=50):
     bestGens = []
     bestGens.append(0)
     while (generations < max_gen) and (generations) < lastBestGen * 5:
-        print(generations)
+        log(generations, "verbose")
         newGen = new_generation(problem, population)
         normalizeFitness(problem, newGen)
         population = newGen
