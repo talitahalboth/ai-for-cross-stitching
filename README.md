@@ -8,7 +8,6 @@ You can run the project with
 python main.py
 ```
 
-on the `matchMultipleTemplate` directory.
 
 ## Pattern Matching
 
