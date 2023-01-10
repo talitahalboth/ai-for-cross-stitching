@@ -80,7 +80,7 @@ def grid_coordinates(dir_name, verbose=False):
     """
     Finds coordinates of a grid
     """
-    log("Finding grid coordinates", "verbose")
+    log("Finding grid coordinates", "VERBOSE")
 
     default_file = 'sunflower/img.png'
     filename = dir_name if len(dir_name) > 0 else default_file
@@ -146,7 +146,7 @@ def grid_coordinates(dir_name, verbose=False):
     rgb = (0,0,255)
     build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_line, rgb, line_width)
 
-    log("DONE --- Found grid coordinates", "verbose")
+    log("DONE --- Found grid coordinates", "VERBOSE")
     if __DEBUG__:
         fig = plt.figure(figsize=(10, 10))
         plt.imshow(cdst_p, alpha=0.6)

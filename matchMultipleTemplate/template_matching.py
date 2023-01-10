@@ -55,7 +55,7 @@ def drawPath(problem, permutation, shortestHamPath=True):
 
 
 def matchTemplate(fileName, dir_name, verbose=False):
-    log("Matching template", "verbose")
+    log("Matching template", "VERBOSE")
     img = cv2.imread(dir_name+"/img.png")
     # convert it from BGR to RGB
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -76,7 +76,7 @@ def matchTemplate(fileName, dir_name, verbose=False):
     # then we get the locations, that have values bigger, than our threshold
     loc = np.where(res >= threshold)
 
-    log("DONE -- Matching template", "verbose")
+    log("DONE -- Matching template", "VERBOSE")
     # remove points too close to each other, likely the same image matched twice
     newPoints = removeCoordinatesClose(list(zip(*loc[::-1])))
 
@@ -101,9 +101,9 @@ def matchTemplate(fileName, dir_name, verbose=False):
     f.close()
     problem = TSP(tspFileName)
 
-    log("Calculating path", "verbose")
+    log("Calculating path", "VERBOSE")
     path, history = genetic_algorithm(problem)
-    log("DONE -- Calculating path", "verbose")
+    log("DONE -- Calculating path", "VERBOSE")
 
     fig = plt.figure(figsize=(10, 10))
     plt.imshow(imgRGB, alpha=0.4)
@@ -120,7 +120,7 @@ def templateMatching(directory="rocket", verbose=False):
         # not present then create it.
         os.makedirs(directory + "/paths/")
     files = os.listdir(directory + "/paths/")
-    if(__DELETE_FILES__):
+    if __DELETE_FILES__:
         for f in files:
             os.remove(directory + "/paths/"+f)
 

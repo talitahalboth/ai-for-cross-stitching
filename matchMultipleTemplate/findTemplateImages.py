@@ -140,16 +140,16 @@ def find_template_images(dir_name, verbose=False):
     img_gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
 
     # get coordinates of grid from file
-    log("Calculating grid coordinates", "verbose")
+    log("Calculating grid coordinates", "VERBOSE")
     coords = gridDetection.grid_coordinates(filename, True)
-    log("DONE --- Calculating grid coordinates ", "verbose")
+    log("DONE --- Calculating grid coordinates ", "VERBOSE")
     grid_size = coords[2]
     template_counter = 1
     saved_templates = []
 
     matching_template_positions = []
 
-    log("Finding templates", "verbose")
+    log("Finding templates", "VERBOSE")
     for h_coord in coords[0]:
         for v_coord in coords[1]:
             x = h_coord
@@ -234,7 +234,7 @@ def find_template_images(dir_name, verbose=False):
                     
                     if isCopy:
                         continue
-                    log("Found template " + str(template_counter), "verbose")
+                    log("Found template " + str(template_counter), "VERBOSE")
                     saved_templates.append(cropped_image)
 
                     cv2.imwrite(dir_name + "/templates/template" + str(template_counter) + ".png",
@@ -248,4 +248,4 @@ def find_template_images(dir_name, verbose=False):
                 continue
             
 
-    log("DONE --- Finding templates", "verbose")
+    log("DONE --- Finding templates", "VERBOSE")

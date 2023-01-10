@@ -130,7 +130,7 @@ def genetic_algorithm(problem, pop_size=50, max_gen=50):
     bestGens = []
     bestGens.append(0)
     while (generations < max_gen) and (generations) < lastBestGen * 5:
-        log(generations, "verbose")
+        log("current generation: "+str(generations), "VERBOSE")
         newGen = new_generation(problem, population)
         normalizeFitness(problem, newGen)
         population = newGen
