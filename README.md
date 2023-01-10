@@ -1,5 +1,16 @@
 # ai-for-cross-stitching
 
+## Usage
+
+You can run the project with 
+
+```
+python main.py
+```
+
+use the `-h` option to check the allowed arguments.
+
+
 ## Pattern Matching
 
 Cross-stitch patterns typically utilize a grid with symbols to represent the color at each intersection. These diagrams are utilized in this context to determine the position of each stitch.
