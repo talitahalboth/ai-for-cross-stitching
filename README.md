@@ -1,5 +1,11 @@
 # ai-for-cross-stitching
 
+## Requirements
+
+```
+pip install -r requirements.txt
+```
+
 ## Usage
 
 You can run the project with 
