@@ -11,11 +11,11 @@ if __name__ == "__main__":
                         action="store_true")
     parser.add_argument("-d", "--directory", help="directory location of pattern", default="et/",
                         action="store")
-    parser.add_argument("-f", "--file", help="file name of pattern (default: img.png)", default="img.png",
+    parser.add_argument("-f", "--file", help="file name of pattern (default: img.png). "
+                                             "The file must preferably have dimensions over 1500px", default="img.png",
                         action="store")
 
     args = parser.parse_args()
-    directory = "et"
     logger = SingletonLogger(args.verbose, args.debug)
     find_template_images(args.directory, args.file)
     template_matching(args.directory, args.file)
