@@ -111,12 +111,13 @@ def rectangles_overlap(R1, R2):
     return True
 
 
-def find_template_images(dir_name, verbose=False):
+def find_template_images(dir_name, file_name):
     """
     Find template images on cross stich pattern
     """
 
     logger = SingletonLogger()
+    logger.log("start")
 
     if not os.path.isdir(dir_name + "/filled/"):
         # if the demo_folder2 directory is
@@ -135,8 +136,9 @@ def find_template_images(dir_name, verbose=False):
     if (__DELETE_FILES__):
         for f in files:
             os.remove(dir_name + "/templates/" + f)
-    filename = dir_name + "/img.png"
-    src = cv2.imread(filename)
+    file_path = dir_name + file_name
+    print(file_path)
+    src = cv2.imread(file_path)
     img_RGB = cv2.cvtColor(src, cv2.COLOR_BGR2RGB)
 
     cv2.imwrite(dir_name + "/filled/template0-filled.png", cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
@@ -145,7 +147,7 @@ def find_template_images(dir_name, verbose=False):
 
     # get coordinates of grid from file
     logger.log("Calculating grid coordinates", "VERBOSE")
-    coords = gridDetection.grid_coordinates(filename, True)
+    coords = gridDetection.grid_coordinates(file_path, True)
     logger.log("DONE --- Calculating grid coordinates ", "VERBOSE")
     grid_size = coords[2]
     template_counter = 1

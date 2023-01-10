@@ -9,14 +9,14 @@ import numpy as np
 from matplotlib import pyplot as plt
 from .logger import SingletonLogger
 
-__DEBUG__ = True
+__DEBUG__ = False
 
 
-def build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_line, rgb,lineWidth):
+def build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_lines, rgb,lineWidth):
     """Build array of vertical coordinates from grid"""
-    for i in range(1, len(v_line)):
-        prev = v_line[i - 1][0] + h_mode
-        cur = v_line[i][0]
+    for i in range(1, len(v_lines)):
+        prev = v_lines[i - 1][0] + h_mode
+        cur = v_lines[i][0]
         while prev + 5 < cur:
             v_coords.append(prev)
             if __DEBUG__:
@@ -48,14 +48,14 @@ def build_grid_coordinates_h_arrays(cdst_p, dimensions, h_coords, h_lines, h_mod
                     (dimensions[1], cur), rgb, lineWidth, cv2.LINE_AA)
 
 
-def build_grid_lines_array(dimensions, h_lines, linesP, v_line):
+def build_grid_lines_array(dimensions, h_lines, linesP, v_lines):
     for line in linesP:
         l = line[0]
         if l[0] == l[2] or l[1] == l[3]:
             if l[0] == l[2]:
                 line[0][1] = 0
                 line[0][3] = dimensions[1]
-                v_line.append(list(line[0]))
+                v_lines.append(list(line[0]))
             if l[1] == l[3]:
                 line[0][0] = 0
                 line[0][2] = dimensions[0]
@@ -76,7 +76,7 @@ def remove_coordinates_close(input_list, threshold=(5, 5)):
     return points_to_keep
 
 
-def grid_coordinates(dir_name, verbose=False):
+def grid_coordinates(file_name, verbose=False):
     """
     Finds coordinates of a grid
     """
@@ -84,7 +84,7 @@ def grid_coordinates(dir_name, verbose=False):
     logger.log("Finding grid coordinates", "VERBOSE")
 
     default_file = 'sunflower/img.png'
-    filename = dir_name if len(dir_name) > 0 else default_file
+    filename = file_name if len(file_name) > 0 else default_file
     # Loads an image
     src = cv2.imread(cv2.samples.findFile(filename))
     # Check if image is loaded fine
@@ -104,10 +104,10 @@ def grid_coordinates(dir_name, verbose=False):
                             threshold=50, lines=None, minLineLength=shape[0]/10, maxLineGap=shape[0]/100)
 
     h_lines = []
-    v_line = []
+    v_lines = []
 
     dimensions = src.shape
-    build_grid_lines_array(dimensions, h_lines, linesP, v_line)
+    build_grid_lines_array(dimensions, h_lines, linesP, v_lines)
 
     def sort_by_y(e):
         return e[1]
@@ -115,8 +115,8 @@ def grid_coordinates(dir_name, verbose=False):
     def sort_by_x(e):
         return e[0]
 
-    v_line.sort(key=sort_by_x)
-    v_line = remove_coordinates_close(v_line)
+    v_lines.sort(key=sort_by_x)
+    v_lines = remove_coordinates_close(v_lines)
     h_lines.sort(key=sort_by_y)
     h_lines = remove_coordinates_close(h_lines)
     h_diff = []
@@ -124,10 +124,23 @@ def grid_coordinates(dir_name, verbose=False):
         diff = h_lines[i][1] - h_lines[i - 1][1]
         if diff > 0:
             h_diff.append(diff)
-
     h_diff.sort()
     h_mode = statistics.mode(h_diff)
-    logger.log(h_mode, "DEBUG")
+
+    logger.log(f"h diff:{h_diff}", "DEBUG")
+    logger.log(f"h mode:{h_mode}", "DEBUG")
+
+    v_diff = []
+    for i in range(1, len(v_lines)):
+        diff = v_lines[i][0] - v_lines[i - 1][0]
+        if diff > 0:
+            v_diff.append(diff)
+    v_diff.sort()
+    v_mode = statistics.mode(v_diff)
+
+    logger.log(f"v diff:{v_diff}", "DEBUG")
+    logger.log(f"v mode:{v_mode}", "DEBUG")
+
     ini_h = h_lines[0][1]
     rgb = (0,255,0)
     line_width = 8
@@ -145,7 +158,7 @@ def grid_coordinates(dir_name, verbose=False):
 
     v_coords = [ini_v]
     rgb = (0,0,255)
-    build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_line, rgb, line_width)
+    build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_lines, rgb, line_width)
 
     logger.log("DONE --- Found grid coordinates", "VERBOSE")
     if __DEBUG__:

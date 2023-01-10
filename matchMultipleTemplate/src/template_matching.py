@@ -59,10 +59,10 @@ def drawPath(problem, permutation, shortestHamPath=True):
     plt.plot(xs, ys, marker='o')
 
 
-def matchTemplate(fileName, dir_name, verbose=False):
+def matchTemplate(fileName, dir_name, original_file_name):
     logger = SingletonLogger()
     logger.log("Matching template", "VERBOSE")
-    img = cv2.imread(dir_name+"/img.png")
+    img = cv2.imread(dir_name+original_file_name)
     # convert it from BGR to RGB
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     # and convert it from BGR to GRAY
@@ -118,7 +118,7 @@ def matchTemplate(fileName, dir_name, verbose=False):
     plt.close('all')
 
 
-def templateMatching(directory="rocket", verbose=False):
+def templateMatching(directory, file_name):
     entries = os.listdir(directory + "/templates/")
 
     if not os.path.isdir(directory + "/paths/"):
@@ -131,5 +131,5 @@ def templateMatching(directory="rocket", verbose=False):
             os.remove(directory + "/paths/"+f)
 
     for entry in entries:
-        matchTemplate(entry, directory, verbose)
+        matchTemplate(entry, directory, file_name)
 
