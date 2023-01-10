@@ -5,7 +5,9 @@ from . import griddetection
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
+import multiprocessing
 from .logger import SingletonLogger
+from .templatematching import match_template
 
 __DEBUG__ = False
 __DELETE_FILES__ = False
@@ -120,20 +122,16 @@ def find_template_images(dir_name, file_name):
     logger.log("start")
     if __SAVE_FILLED__:
         if not os.path.isdir(dir_name + "/filled/"):
-            # if the demo_folder2 directory is
-            # not present then create it.
             os.makedirs(dir_name + "/filled/")
-        filedFilled = os.listdir(dir_name + "/filled/")
         if __DELETE_FILES__:
+            filedFilled = os.listdir(dir_name + "/filled/")
             for f in filedFilled:
                 os.remove(dir_name + "/filled/" + f)
 
     if not os.path.isdir(dir_name + "/templates/"):
-        # if the demo_folder2 directory is
-        # not present then create it.
         os.makedirs(dir_name + "/templates/")
-    files = os.listdir(dir_name + "/templates/")
     if __DELETE_FILES__:
+        files = os.listdir(dir_name + "/templates/")
         for f in files:
             os.remove(dir_name + "/templates/" + f)
     file_path = dir_name + file_name
@@ -154,7 +152,7 @@ def find_template_images(dir_name, file_name):
 
     matching_template_positions = []
 
-    logger.log("Finding templates", "VERBOSE")
+    logger.log("START -- Finding templates", "INFO")
     for h_coord in coords[0]:
         for v_coord in coords[1]:
             x = h_coord
@@ -236,17 +234,23 @@ def find_template_images(dir_name, file_name):
                     logger.log("Found template " + str(template_counter), "VERBOSE")
                     saved_templates.append(cropped_image)
 
-                    cv2.imwrite(dir_name + "/templates/template" + str(template_counter) + ".png",
+                    template_fine_name = "template" + str(template_counter) + ".png"
+                    templates_directory = dir_name + "/templates/"
+                    cv2.imwrite(templates_directory + template_fine_name,
                                 cropped_image_no_grid)
                     if __SAVE_FILLED__:
                         cv2.imwrite(dir_name + "/filled/template" +
                                 str(template_counter) + "-filled.png", cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
 
+                    # spawn process to match and find paths
+                    multiprocessing.Process(target=match_template, args=(template_fine_name, dir_name, templates_directory, file_name, logger.__VERBOSE__, logger.__DEBUG__)).start()
+
                     template_counter += 1
+
 
             except cv2.error:
                 continue
 
-    logger.log("DONE --- Finding templates", "VERBOSE")
-
+    logger.log("DONE --- Finding templates", "INFO")
+    
     os.remove("cropped.png")
