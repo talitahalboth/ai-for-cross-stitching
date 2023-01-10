@@ -118,29 +118,29 @@ def find_template_images(dir_name, file_name):
 
     logger = SingletonLogger()
     logger.log("start")
-
-    if not os.path.isdir(dir_name + "/filled/"):
-        # if the demo_folder2 directory is
-        # not present then create it.
-        os.makedirs(dir_name + "/filled/")
-    filedFilled = os.listdir(dir_name + "/filled/")
-    if (__DELETE_FILES__):
-        for f in filedFilled:
-            os.remove(dir_name + "/filled/" + f)
+    if __DEBUG__:
+        if not os.path.isdir(dir_name + "/filled/"):
+            # if the demo_folder2 directory is
+            # not present then create it.
+            os.makedirs(dir_name + "/filled/")
+        filedFilled = os.listdir(dir_name + "/filled/")
+        if __DELETE_FILES__:
+            for f in filedFilled:
+                os.remove(dir_name + "/filled/" + f)
 
     if not os.path.isdir(dir_name + "/templates/"):
         # if the demo_folder2 directory is
         # not present then create it.
         os.makedirs(dir_name + "/templates/")
     files = os.listdir(dir_name + "/templates/")
-    if (__DELETE_FILES__):
+    if __DELETE_FILES__:
         for f in files:
             os.remove(dir_name + "/templates/" + f)
     file_path = dir_name + file_name
     src = cv2.imread(file_path)
     img_RGB = cv2.cvtColor(src, cv2.COLOR_BGR2RGB)
-
-    cv2.imwrite(dir_name + "/filled/template0-filled.png", cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
+    if __DEBUG__:
+        cv2.imwrite(dir_name + "/filled/template0-filled.png", cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
     # and convert it from BGR to GRAY
     img_gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
 
@@ -161,8 +161,6 @@ def find_template_images(dir_name, file_name):
             y = v_coord
 
             for matching_template_position in matching_template_positions:
-                # 
-                # 
                 if rectangles_overlap([y, x, y + grid_size, x + grid_size], matching_template_position):
                     copy = src.copy()
                     cv2.rectangle(copy,
@@ -240,7 +238,8 @@ def find_template_images(dir_name, file_name):
 
                     cv2.imwrite(dir_name + "/templates/template" + str(template_counter) + ".png",
                                 cropped_image_no_grid)
-                    cv2.imwrite(dir_name + "/filled/template" +
+                    if __DEBUG__:
+                        cv2.imwrite(dir_name + "/filled/template" +
                                 str(template_counter) + "-filled.png", cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
 
                     template_counter += 1
