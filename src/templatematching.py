@@ -74,7 +74,7 @@ def match_template(file_name, dir_name, templates_directory, original_file_name,
         # remove points too close to each other, likely the same image matched twice
         newPoints = remove_coordinates_close(list(zip(*loc[::-1])))
 
-        tspfile_name = "teste.tsp"
+        tspfile_name = file_name.split('.')[0]+"-tsp.tsp"
         f = open(tspfile_name, "w")
 
         f.write("NAME: " + file_name + '\n')
@@ -106,7 +106,7 @@ def match_template(file_name, dir_name, templates_directory, original_file_name,
         plt.close('all')
         os.remove(tspfile_name)
     except Exception as e:
-        pass 
+        logger.log(f"An error ocurred while matching template for file {file_name}: {e}",  "ERROR")
 
 def template_matching(directory, templates_directory, file_name):
     entries = os.listdir(templates_directory)
