@@ -2,6 +2,7 @@ from src.logger import SingletonLogger
 from src.findtemplateimages import find_template_images
 from src.templatematching import template_matching
 import argparse
+import os
 
 if __name__ == "__main__":
     # TODO: check files and directories
@@ -11,7 +12,7 @@ if __name__ == "__main__":
     parser.add_argument("-D", "--debug", help="Output debug logs",
                         action="store_true")
     # TODO: add / to end of dir name
-    parser.add_argument("-d", "--directory", help="Directory location of pattern", default="examples/heart/",
+    parser.add_argument("-d", "--directory", help="Directory location of pattern", default="examples/starryNight/",
                         action="store")
     parser.add_argument("-f", "--file", help="File name of pattern (default: img.png). "
                                              "The file must preferably have dimensions over 1500px", default="img.png",

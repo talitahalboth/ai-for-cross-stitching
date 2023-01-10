@@ -7,8 +7,11 @@
 import os
 import itertools
 import cv2
+import multiprocessing
 import numpy as np
 from matplotlib import pyplot as plt
+from signal import CTRL_C_EVENT, signal, SIGINT
+
 
 __DELETE_FILES__ = False
 
@@ -44,73 +47,104 @@ def draw_path(problem, permutation, shortestHamPath=True):
 
 
 def match_template(fileName, dir_name, templates_directory, original_file_name):
-    logger = SingletonLogger()
-    logger.log("Matching template", "VERBOSE")
-    img = cv2.imread(dir_name + original_file_name)
-    # convert it from BGR to RGB
-    imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    # and convert it from BGR to GRAY
-    imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    try:
+        logger = SingletonLogger()
+        logger.log("Matching template", "VERBOSE")
+        img = cv2.imread(dir_name + original_file_name)
+        # convert it from BGR to RGB
+        imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # and convert it from BGR to GRAY
+        imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    template = cv2.imread(templates_directory + fileName, 0)
+        template = cv2.imread(templates_directory + fileName, 0)
 
-    # then we get the shape of the template
-    w, h = template.shape[::-1]
+        # then we get the shape of the template
+        w, h = template.shape[::-1]
 
-    # So, we take our image, our template and the template matching method
-    res = cv2.matchTemplate(imgGray,
-                            template,
-                            cv2.TM_CCOEFF_NORMED)
+        # So, we take our image, our template and the template matching method
+        res = cv2.matchTemplate(imgGray,
+                                template,
+                                cv2.TM_CCOEFF_NORMED)
 
-    threshold = 0.9
-    # then we get the locations, that have values bigger, than our threshold
-    loc = np.where(res >= threshold)
+        threshold = 0.9
+        # then we get the locations, that have values bigger, than our threshold
+        loc = np.where(res >= threshold)
 
-    logger.log("DONE -- Matching template", "VERBOSE")
-    # remove points too close to each other, likely the same image matched twice
-    newPoints = remove_coordinates_close(list(zip(*loc[::-1])))
+        logger.log("DONE -- Matching template", "VERBOSE")
+        # remove points too close to each other, likely the same image matched twice
+        newPoints = remove_coordinates_close(list(zip(*loc[::-1])))
 
-    tspFileName = "teste.tsp"
-    f = open(tspFileName, "w")
+        tspFileName = "teste.tsp"
+        f = open(tspFileName, "w")
 
-    f.write("NAME: " + fileName + '\n')
-    f.write("TYPE: TSP" + '\n')
-    f.write("DIMENSION: " + str(len(newPoints)) + '\n')
-    f.write("EDGE_WEIGHT_TYPE: EUC_2D" + '\n')
-    f.write("NODE_COORD_SECTION" + '\n')
-    index = 1
-    for pt in newPoints:
-        f.write(" ".join([str(index), str(pt[0] + w / 2), str(pt[1] + h / 2)]) + '\n')
-        index += 1
-        cv2.rectangle(imgRGB,
-                      pt,
-                      (pt[0] + w, pt[1] + h),
-                      (230, 0, 255),
-                      1)
-    f.write("EOF" + '\n')
-    f.close()
-    problem = TSP(tspFileName)
+        f.write("NAME: " + fileName + '\n')
+        f.write("TYPE: TSP" + '\n')
+        f.write("DIMENSION: " + str(len(newPoints)) + '\n')
+        f.write("EDGE_WEIGHT_TYPE: EUC_2D" + '\n')
+        f.write("NODE_COORD_SECTION" + '\n')
+        index = 1
+        for pt in newPoints:
+            f.write(" ".join([str(index), str(pt[0] + w / 2), str(pt[1] + h / 2)]) + '\n')
+            index += 1
+            cv2.rectangle(imgRGB,
+                        pt,
+                        (pt[0] + w, pt[1] + h),
+                        (230, 0, 255),
+                        1)
+        f.write("EOF" + '\n')
+        f.close()
+        problem = TSP(tspFileName)
 
-    logger.log("Calculating path", "VERBOSE")
-    path, history = genetic_algorithm(problem)
-    logger.log("DONE -- Calculating path", "VERBOSE")
+        logger.log("Calculating path", "VERBOSE")
+        path, history = genetic_algorithm(problem)
+        logger.log("DONE -- Calculating path", "VERBOSE")
 
-    fig = plt.figure(figsize=(10, 10))
-    plt.imshow(imgRGB, alpha=0.4)
-    draw_path(problem, path)
-    plt.savefig(dir_name + '/paths/' + fileName)
-    plt.close('all')
-    os.remove(tspFileName)
+        fig = plt.figure(figsize=(10, 10))
+        plt.imshow(imgRGB, alpha=0.4)
+        draw_path(problem, path)
+        plt.savefig(dir_name + '/paths/' + fileName)
+        plt.close('all')
+        os.remove(tspFileName)
+    except KeyboardInterrupt:
+        pass 
 
+def terminate_proc(signal_received, frame):
+
+    """
+    Explicitly terminate child processes prior to exiting program.
+    """
+
+    print("---")
+    print("SIGINT or CTRL-C detected. Exiting gracefully")
+
+
+    print("---")
+    pool.terminate()
+    pool.join()
+
+    sys_exit(0)
 
 def template_matching(directory, templates_directory, file_name):
     entries = os.listdir(templates_directory)
 
-
+    logger = SingletonLogger()
+    signal(SIGINT, terminate_proc)
+    pool = multiprocessing.Pool()
     if __DELETE_FILES__:
         files = os.listdir(directory + "/paths/")
         for f in files:
             os.remove(directory + "/paths/" + f)
-
+    logger.log("Starting path finding processes", "VERBOSE")
     for entry in entries:
-        match_template(entry, directory, templates_directory, file_name)
+        pool.apply_async(match_template, (entry, directory, templates_directory, file_name))
+        
+    logger.log("Waiting for processes to finish", "VERBOSE")
+    # waits for process to finish
+    # kills processes if keyinterrupt
+    
+    pool.close()
+    pool.join()
+        
+    # try:
+    # except
+    logger.log("DONE -- Waiting for processes to finish", "VERBOSE")
