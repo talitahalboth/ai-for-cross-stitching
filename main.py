@@ -27,7 +27,7 @@ if __name__ == "__main__":
     logger = SingletonLogger(args.verbose, args.debug)
     templates_directory = str(args.directory) + "templates/"
 
-    
+    # todo: set output directory
     if not os.path.isdir(args.directory + "/paths/"):
         os.makedirs(args.directory + "/paths/")
 
