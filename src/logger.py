@@ -1,5 +1,5 @@
 from colorama import just_fix_windows_console, Fore
-
+import os
 import datetime
 
 
@@ -31,17 +31,17 @@ class SingletonLogger(object):
         just_fix_windows_console()
 
         now = datetime.datetime.now()
-        newMessage = f"[{str(now)}] {message}"
+        newMessage = f"[{os.getpid()}] [{str(now)}] {message}"
 
         if severity == 'DEBUG':
             if self.__DEBUG__:
-                print(Fore.BLUE + f'{self.severity_info[severity]}: {newMessage}')
+                print(Fore.BLUE + f'{self.severity_info[severity]}: {newMessage}', flush=True)
         elif severity == "VERBOSE":
             if self.__VERBOSE__:
-                print(Fore.MAGENTA + f'{self.severity_info[severity]}: {newMessage}')
+                print(Fore.MAGENTA + f'{self.severity_info[severity]}: {newMessage}', flush=True)
         elif severity == "WARNING":
-            print(Fore.YELLOW + f'{self.severity_info[severity]}: {newMessage}')
+            print(Fore.YELLOW + f'{self.severity_info[severity]}: {newMessage}', flush=True)
         elif severity == "ERROR":
-            print(Fore.RED + f'{self.severity_info[severity]}: {newMessage}')
+            print(Fore.RED + f'{self.severity_info[severity]}: {newMessage}', flush=True)
         else:
-            print(Fore.GREEN + f'{self.severity_info["INFO"]}: {newMessage}')
+            print(Fore.GREEN + f'{self.severity_info["INFO"]}: {newMessage}', flush=True)

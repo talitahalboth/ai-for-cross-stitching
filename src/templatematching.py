@@ -46,17 +46,17 @@ def draw_path(problem, permutation, shortestHamPath=True):
     plt.plot(xs, ys, marker='o')
 
 
-def match_template(fileName, dir_name, templates_directory, original_file_name):
+def match_template(file_name, dir_name, templates_directory, original_file_name, verbose=False, debug=False):
     try:
-        logger = SingletonLogger()
-        logger.log("Matching template", "VERBOSE")
+        logger = SingletonLogger(verbose, debug)
+        logger.log("START -- Matching template for template: "+file_name,  "INFO")
         img = cv2.imread(dir_name + original_file_name)
         # convert it from BGR to RGB
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         # and convert it from BGR to GRAY
         imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        template = cv2.imread(templates_directory + fileName, 0)
+        template = cv2.imread(templates_directory + file_name, 0)
 
         # then we get the shape of the template
         w, h = template.shape[::-1]
@@ -70,14 +70,14 @@ def match_template(fileName, dir_name, templates_directory, original_file_name):
         # then we get the locations, that have values bigger, than our threshold
         loc = np.where(res >= threshold)
 
-        logger.log("DONE -- Matching template", "VERBOSE")
+        logger.log("DONE -- Matching template for template: "+file_name,  "INFO")
         # remove points too close to each other, likely the same image matched twice
         newPoints = remove_coordinates_close(list(zip(*loc[::-1])))
 
-        tspFileName = "teste.tsp"
-        f = open(tspFileName, "w")
+        tspfile_name = "teste.tsp"
+        f = open(tspfile_name, "w")
 
-        f.write("NAME: " + fileName + '\n')
+        f.write("NAME: " + file_name + '\n')
         f.write("TYPE: TSP" + '\n')
         f.write("DIMENSION: " + str(len(newPoints)) + '\n')
         f.write("EDGE_WEIGHT_TYPE: EUC_2D" + '\n')
@@ -93,18 +93,18 @@ def match_template(fileName, dir_name, templates_directory, original_file_name):
                         1)
         f.write("EOF" + '\n')
         f.close()
-        problem = TSP(tspFileName)
+        problem = TSP(tspfile_name)
 
-        logger.log("Calculating path", "VERBOSE")
+        logger.log("START -- Calculating path for template: "+file_name, "INFO")
         path, history = genetic_algorithm(problem)
-        logger.log("DONE -- Calculating path", "VERBOSE")
+        logger.log("DONE -- Calculating path for template: "+file_name,  "INFO")
 
         fig = plt.figure(figsize=(10, 10))
         plt.imshow(imgRGB, alpha=0.4)
         draw_path(problem, path)
-        plt.savefig(dir_name + '/paths/' + fileName)
+        plt.savefig(dir_name + '/paths/' + file_name)
         plt.close('all')
-        os.remove(tspFileName)
+        os.remove(tspfile_name)
     except Exception as e:
         pass 
 
@@ -116,9 +116,6 @@ def template_matching(directory, templates_directory, file_name):
         files = os.listdir(directory + "/paths/")
         for f in files:
             os.remove(directory + "/paths/" + f)
-    logger.log("Starting path finding processes", "VERBOSE")
     for entry in entries:
-        logger.log(entry)
-        multiprocessing.Process(target=match_template, args=(entry, directory, templates_directory, file_name)).start()
+        multiprocessing.Process(target=match_template, args=(entry, directory, templates_directory, file_name, logger.__VERBOSE__, logger.__DEBUG__)).start()
         
-    logger.log("Waiting for processes to finish", "VERBOSE")

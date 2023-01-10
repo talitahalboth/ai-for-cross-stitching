@@ -152,7 +152,7 @@ def find_template_images(dir_name, file_name):
 
     matching_template_positions = []
 
-    logger.log("Finding templates", "VERBOSE")
+    logger.log("START -- Finding templates", "INFO")
     for h_coord in coords[0]:
         for v_coord in coords[1]:
             x = h_coord
@@ -243,8 +243,7 @@ def find_template_images(dir_name, file_name):
                                 str(template_counter) + "-filled.png", cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
 
                     # spawn process to match and find paths
-                    logger.log("Finding paths for template "+str(template_counter), "VERBOSE")
-                    multiprocessing.Process(target=match_template, args=(template_fine_name, dir_name, templates_directory, file_name)).start()
+                    multiprocessing.Process(target=match_template, args=(template_fine_name, dir_name, templates_directory, file_name, logger.__VERBOSE__, logger.__DEBUG__)).start()
 
                     template_counter += 1
 
@@ -252,8 +251,6 @@ def find_template_images(dir_name, file_name):
             except cv2.error:
                 continue
 
-
-    logger.log("DONE --- Finding templates", "VERBOSE")
-    logger.log("Waiting to finish finding paths", "VERBOSE")
+    logger.log("DONE --- Finding templates", "INFO")
     
     os.remove("cropped.png")
