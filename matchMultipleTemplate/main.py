@@ -14,8 +14,14 @@ if __name__ == "__main__":
     parser.add_argument("-f", "--file", help="file name of pattern (default: img.png). "
                                              "The file must preferably have dimensions over 1500px", default="img.png",
                         action="store")
+    parser.add_argument("-t", "--templates", help="Directory containing templates. Must only be defined if templates "
+                                                  "are already created",
+                        action="store")
 
     args = parser.parse_args()
     logger = SingletonLogger(args.verbose, args.debug)
-    find_template_images(args.directory, args.file)
-    template_matching(args.directory, args.file)
+    templates_directory = str(args.directory) + "templates/"
+    if args.templates is not None:
+        templates_directory = args.templates
+    # else: find_template_images(args.directory, args.file)
+    template_matching(args.directory, templates_directory, args.file)

@@ -43,7 +43,7 @@ def draw_path(problem, permutation, shortestHamPath=True):
     plt.plot(xs, ys, marker='o')
 
 
-def match_template(fileName, dir_name, original_file_name):
+def match_template(fileName, dir_name, templates_directory, original_file_name):
     logger = SingletonLogger()
     logger.log("Matching template", "VERBOSE")
     img = cv2.imread(dir_name + original_file_name)
@@ -52,7 +52,7 @@ def match_template(fileName, dir_name, original_file_name):
     # and convert it from BGR to GRAY
     imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    template = cv2.imread(dir_name + "/templates/" + fileName, 0)
+    template = cv2.imread(templates_directory + fileName, 0)
 
     # then we get the shape of the template
     w, h = template.shape[::-1]
@@ -103,8 +103,8 @@ def match_template(fileName, dir_name, original_file_name):
     os.remove(tspFileName)
 
 
-def template_matching(directory, file_name):
-    entries = os.listdir(directory + "/templates/")
+def template_matching(directory, templates_directory, file_name):
+    entries = os.listdir(templates_directory)
 
     if not os.path.isdir(directory + "/paths/"):
         os.makedirs(directory + "/paths/")
@@ -115,4 +115,4 @@ def template_matching(directory, file_name):
             os.remove(directory + "/paths/" + f)
 
     for entry in entries:
-        match_template(entry, directory, file_name)
+        match_template(entry, directory, templates_directory, file_name)
