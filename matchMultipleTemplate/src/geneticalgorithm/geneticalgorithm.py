@@ -1,11 +1,12 @@
 import random
 
-import utils
-from EAX import eax
-from individual import Individual
-from tsp import TSP
+# import .utils
+from .EAX import eax
+from .individual import Individual
+from .tsp import TSP
 # from EAX import eax
-from tournamentSelection import tournamentSelection
+from .tournamentSelection import tournamentSelection
+from ..logger import SingletonLogger
 
 random.seed(120)
 
@@ -109,6 +110,8 @@ def new_generation(problem, population):
 
 
 def genetic_algorithm(problem, pop_size=50, max_gen=50):
+
+    logger = SingletonLogger()
     population = random_population(problem, pop_size)
     fitness_history = []
     best_permutation = None
@@ -129,7 +132,7 @@ def genetic_algorithm(problem, pop_size=50, max_gen=50):
     bestGens = []
     bestGens.append(0)
     while (generations < max_gen) and (generations) < lastBestGen * 5:
-        print(generations)
+        logger.log("current generation: "+str(generations), "VERBOSE")
         newGen = new_generation(problem, population)
         normalizeFitness(problem, newGen)
         population = newGen

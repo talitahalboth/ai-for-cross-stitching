@@ -1,13 +1,15 @@
 import math
-import gridDetection
 import os
 
+from . import griddetection
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
-
+from .logger import SingletonLogger
 
 __DEBUG__ = False
+__DELETE_FILES__ = False
+
 
 def check_templates_match(image_list, template):
     """
@@ -103,50 +105,77 @@ def crop_grid_borders_from_template(template):
     return cropped_image
 
 
-def find_template_images(dir_name, verbose=False):
+def rectangles_overlap(R1, R2):
+    if (R1[0] >= R2[2]) or (R1[2] <= R2[0]) or (R1[3] <= R2[1]) or (R1[1] >= R2[3]):
+        return False
+    return True
+
+
+def find_template_images(dir_name, file_name):
     """
     Find template images on cross stich pattern
     """
 
-    if not os.path.isdir(dir_name + "/filled/"):
-        # if the demo_folder2 directory is
-        # not present then create it.
-        os.makedirs(dir_name + "/filled/")
-    filedFilled = os.listdir(dir_name + "/filled/")
-    for f in filedFilled:
-        os.remove(dir_name + "/filled/" + f)
+    logger = SingletonLogger()
+    logger.log("start")
+    if __DEBUG__:
+        if not os.path.isdir(dir_name + "/filled/"):
+            # if the demo_folder2 directory is
+            # not present then create it.
+            os.makedirs(dir_name + "/filled/")
+        filedFilled = os.listdir(dir_name + "/filled/")
+        if __DELETE_FILES__:
+            for f in filedFilled:
+                os.remove(dir_name + "/filled/" + f)
 
     if not os.path.isdir(dir_name + "/templates/"):
         # if the demo_folder2 directory is
         # not present then create it.
         os.makedirs(dir_name + "/templates/")
     files = os.listdir(dir_name + "/templates/")
-    for f in files:
-        os.remove(dir_name + "/templates/" + f)
-    filename = dir_name + "/img.png"
-    src = cv2.imread(filename)
+    if __DELETE_FILES__:
+        for f in files:
+            os.remove(dir_name + "/templates/" + f)
+    file_path = dir_name + file_name
+    src = cv2.imread(file_path)
     img_RGB = cv2.cvtColor(src, cv2.COLOR_BGR2RGB)
-
-    cv2.imwrite(dir_name + "/filled/template0-filled.png",  cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
+    if __DEBUG__:
+        cv2.imwrite(dir_name + "/filled/template0-filled.png", cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
     # and convert it from BGR to GRAY
     img_gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
 
     # get coordinates of grid from file
-    if verbose:
-        print("Calculating grid coordinates")
-    coords = gridDetection.grid_coordinates(filename)
-    if verbose:
-        print("DONE --- Calculating grid coordinates ")
+    logger.log("Calculating grid coordinates", "VERBOSE")
+    coords = griddetection.grid_coordinates(file_path, True)
+    logger.log("DONE --- Calculating grid coordinates ", "VERBOSE")
     grid_size = coords[2]
     template_counter = 1
     saved_templates = []
 
-    if verbose:
-        print("Finding templates")
+    matching_template_positions = []
+
+    logger.log("Finding templates", "VERBOSE")
     for h_coord in coords[0]:
         for v_coord in coords[1]:
-            y = v_coord
             x = h_coord
+            y = v_coord
+
+            for matching_template_position in matching_template_positions:
+                if rectangles_overlap([y, x, y + grid_size, x + grid_size], matching_template_position):
+                    copy = src.copy()
+                    cv2.rectangle(copy,
+                                  (y, x),
+                                  (y + grid_size, x + grid_size),
+                                  (0, 255, 0),
+                                  -1)
+                    cv2.rectangle(copy,
+                                  (matching_template_position[0], matching_template_position[1]),
+                                  (matching_template_position[2], matching_template_position[3]),
+                                  (0, 0, 255),
+                                  -1)
+
+                    continue
+
             margin = 4
 
             image_copy = src.copy()
@@ -158,7 +187,6 @@ def find_template_images(dir_name, verbose=False):
                 # cropped_image_no_grid = crop_borders_from_margin_value(cropped_image.copy())
                 cropped_image_no_grid = crop_grid_borders_from_template(
                     cropped_image.copy())
-
 
                 if __DEBUG__:
                     plt.clf()
@@ -188,34 +216,37 @@ def find_template_images(dir_name, verbose=False):
                 if len(list(zip(*loc[::-1]))) > 0:
                     # check if template matches previous saved templates
                     isCopy = check_templates_match(saved_templates, template)
-
+                    # newPoints = removeCoordinatesClose(list(zip(*loc[::-1])))
                     for pt in zip(*loc[::-1]):
+                        pt1 = (pt[0] + w, pt[1] + h)
+                        # matching_template_positions.append([pt[0],pt[1],pt1[0],pt1[1]])
                         cv2.rectangle(img_RGB,
                                       pt,
-                                      (pt[0] + w, pt[1] + h),
+                                      pt1,
                                       (0, 255, 255),
                                       -1)
                         cv2.rectangle(img_gray,
                                       pt,
-                                      (pt[0] + w, pt[1] + h),
+                                      pt1,
                                       (0, 255, 255),
                                       -1)
+
                     if isCopy:
                         continue
+                    logger.log("Found template " + str(template_counter), "VERBOSE")
                     saved_templates.append(cropped_image)
 
                     cv2.imwrite(dir_name + "/templates/template" + str(template_counter) + ".png",
                                 cropped_image_no_grid)
-                    cv2.imwrite(dir_name + "/filled/template" +
-                                str(template_counter) + "-filled.png",  cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
+                    if __DEBUG__:
+                        cv2.imwrite(dir_name + "/filled/template" +
+                                str(template_counter) + "-filled.png", cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
 
                     template_counter += 1
 
             except cv2.error:
                 continue
 
-    if verbose:
-        print("DONE --- Finding templates")
-directory = "rocket"
+    logger.log("DONE --- Finding templates", "VERBOSE")
 
-find_template_images(directory)
+    os.remove("cropped.png")

@@ -1,9 +1,8 @@
 import random
 import itertools
 
-# shortestHamiltonianPath = False
 
-class TSP():
+class TSP:
     shortestHamiltonianPath = True
 
     def __init__(self, instance_file):
@@ -31,7 +30,7 @@ class TSP():
         if self.shortestHamiltonianPath:
             self.coords.append([-1, -1])
             coords[self.size] = (-1, -1)
-            self.size+=1
+            self.size += 1
         self.distance_matrix = [[0] * self.size for _ in range(self.size)]
 
         for i, j in itertools.combinations(range(self.size), 2):
