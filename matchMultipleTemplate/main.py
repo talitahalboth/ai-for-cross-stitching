@@ -10,6 +10,7 @@ if __name__ == "__main__":
                         action="store_true")
     parser.add_argument("-D", "--debug", help="Output debug logs",
                         action="store_true")
+    # TODO: add / to end of dir name
     parser.add_argument("-d", "--directory", help="Directory location of pattern", default="et/",
                         action="store")
     parser.add_argument("-f", "--file", help="File name of pattern (default: img.png). "
