@@ -118,26 +118,20 @@ def find_template_images(dir_name, file_name):
     Find template images on cross stich pattern
     """
 
-    pool = multiprocessing.Pool()
-
     logger = SingletonLogger()
     logger.log("start")
     if __SAVE_FILLED__:
         if not os.path.isdir(dir_name + "/filled/"):
-            # if the demo_folder2 directory is
-            # not present then create it.
             os.makedirs(dir_name + "/filled/")
-        filedFilled = os.listdir(dir_name + "/filled/")
         if __DELETE_FILES__:
+            filedFilled = os.listdir(dir_name + "/filled/")
             for f in filedFilled:
                 os.remove(dir_name + "/filled/" + f)
 
     if not os.path.isdir(dir_name + "/templates/"):
-        # if the demo_folder2 directory is
-        # not present then create it.
         os.makedirs(dir_name + "/templates/")
-    files = os.listdir(dir_name + "/templates/")
     if __DELETE_FILES__:
+        files = os.listdir(dir_name + "/templates/")
         for f in files:
             os.remove(dir_name + "/templates/" + f)
     file_path = dir_name + file_name
@@ -250,7 +244,7 @@ def find_template_images(dir_name, file_name):
 
                     # spawn process to match and find paths
                     logger.log("Finding paths for template "+str(template_counter), "VERBOSE")
-                    pool.apply_async(match_template, (template_fine_name, dir_name, templates_directory, file_name))
+                    multiprocessing.Process(target=match_template, args=(template_fine_name, dir_name, templates_directory, file_name)).start()
 
                     template_counter += 1
 
@@ -261,7 +255,5 @@ def find_template_images(dir_name, file_name):
 
     logger.log("DONE --- Finding templates", "VERBOSE")
     logger.log("Waiting to finish finding paths", "VERBOSE")
-    pool.close()
-    pool.join()
-    logger.log("DONE --- Finding paths", "VERBOSE")
+    
     os.remove("cropped.png")

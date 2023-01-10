@@ -105,46 +105,20 @@ def match_template(fileName, dir_name, templates_directory, original_file_name):
         plt.savefig(dir_name + '/paths/' + fileName)
         plt.close('all')
         os.remove(tspFileName)
-    except KeyboardInterrupt:
+    except Exception as e:
         pass 
-
-def terminate_proc(signal_received, frame):
-
-    """
-    Explicitly terminate child processes prior to exiting program.
-    """
-
-    print("---")
-    print("SIGINT or CTRL-C detected. Exiting gracefully")
-
-
-    print("---")
-    pool.terminate()
-    pool.join()
-
-    sys_exit(0)
 
 def template_matching(directory, templates_directory, file_name):
     entries = os.listdir(templates_directory)
 
     logger = SingletonLogger()
-    signal(SIGINT, terminate_proc)
-    pool = multiprocessing.Pool()
     if __DELETE_FILES__:
         files = os.listdir(directory + "/paths/")
         for f in files:
             os.remove(directory + "/paths/" + f)
     logger.log("Starting path finding processes", "VERBOSE")
     for entry in entries:
-        pool.apply_async(match_template, (entry, directory, templates_directory, file_name))
+        logger.log(entry)
+        multiprocessing.Process(target=match_template, args=(entry, directory, templates_directory, file_name)).start()
         
     logger.log("Waiting for processes to finish", "VERBOSE")
-    # waits for process to finish
-    # kills processes if keyinterrupt
-    
-    pool.close()
-    pool.join()
-        
-    # try:
-    # except
-    logger.log("DONE -- Waiting for processes to finish", "VERBOSE")
