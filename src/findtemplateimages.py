@@ -195,7 +195,7 @@ def find_template_images(dir_name, file_name):
                     plt.imshow(cropped_image_no_grid)
                     plt.show()
 
-                if np.mean(cropped_image_no_grid) >= 255:
+                if np.mean(cropped_image_no_grid) >= 254:
                     continue
                 if cropped_image_no_grid.shape[0] < grid_size / 2 or cropped_image_no_grid.shape[1] < grid_size / 2:
                     continue
