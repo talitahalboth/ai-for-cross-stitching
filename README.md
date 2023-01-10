@@ -8,6 +8,8 @@ You can run the project with
 python main.py
 ```
 
+use the `-h` option to check the allowed arguments.
+
 
 ## Pattern Matching
 
