@@ -13,7 +13,6 @@ So, let's start!
 """
 
 import os
-import sys
 import itertools
 import cv2
 import numpy as np
@@ -116,6 +115,7 @@ def matchTemplate(fileName, dir_name, original_file_name):
     drawPath(problem, path)
     plt.savefig(dir_name+'/paths/' + fileName)
     plt.close('all')
+    os.remove(tspFileName)
 
 
 def templateMatching(directory, file_name):

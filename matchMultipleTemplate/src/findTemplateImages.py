@@ -137,7 +137,6 @@ def find_template_images(dir_name, file_name):
         for f in files:
             os.remove(dir_name + "/templates/" + f)
     file_path = dir_name + file_name
-    print(file_path)
     src = cv2.imread(file_path)
     img_RGB = cv2.cvtColor(src, cv2.COLOR_BGR2RGB)
 
@@ -250,3 +249,5 @@ def find_template_images(dir_name, file_name):
                 continue
 
     logger.log("DONE --- Finding templates", "VERBOSE")
+
+    os.remove("cropped.png")

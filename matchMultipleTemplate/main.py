@@ -17,5 +17,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     directory = "et"
     logger = SingletonLogger(args.verbose, args.debug)
-    # find_template_images(args.directory, args.file)
+    find_template_images(args.directory, args.file)
     templateMatching(args.directory, args.file)

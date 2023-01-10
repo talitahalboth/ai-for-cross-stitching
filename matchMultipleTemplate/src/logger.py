@@ -1,5 +1,4 @@
-from colorama import just_fix_windows_console, Fore, Style
-import time
+from colorama import just_fix_windows_console, Fore
 
 import datetime
 
