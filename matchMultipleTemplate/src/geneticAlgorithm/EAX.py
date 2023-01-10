@@ -2,7 +2,7 @@ import random
 import numpy as np
 
 # check if a path forms  an AB cycle
-from geneticAlgorithm.individual import Individual
+from .individual import Individual
 
 
 def isABcycle(path, size):
@@ -177,7 +177,7 @@ def generateIntermediateSolution(D, C):
 
 # splits tours
 def splitTours(tourArray):
-    from geneticAlgorithm.DSU import DSU
+    from .DSU import DSU
     dsu = DSU(len(tourArray), tourArray)
     for edge in tourArray:
         # if there is and edge u -> v, merge sets of edge u and edge v

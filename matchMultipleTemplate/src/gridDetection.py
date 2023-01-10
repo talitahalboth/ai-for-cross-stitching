@@ -7,7 +7,7 @@ import itertools
 import cv2 
 import numpy as np
 from matplotlib import pyplot as plt
-from logger import log
+from .logger import SingletonLogger
 
 __DEBUG__ = True
 
@@ -80,7 +80,8 @@ def grid_coordinates(dir_name, verbose=False):
     """
     Finds coordinates of a grid
     """
-    log("Finding grid coordinates", "VERBOSE")
+    logger = SingletonLogger()
+    logger.log("Finding grid coordinates", "VERBOSE")
 
     default_file = 'sunflower/img.png'
     filename = dir_name if len(dir_name) > 0 else default_file
@@ -88,8 +89,8 @@ def grid_coordinates(dir_name, verbose=False):
     src = cv2.imread(cv2.samples.findFile(filename))
     # Check if image is loaded fine
     if src is None:
-        log('Error opening image!', "ERROR")
-        log(
+        logger.log('Error opening image!', "ERROR")
+        logger.log(
             'Usage: hough_lines.py [image_name -- default ' + default_file + '] \n', "ERROR")
         return -1
 
@@ -126,7 +127,7 @@ def grid_coordinates(dir_name, verbose=False):
 
     h_diff.sort()
     h_mode = statistics.mode(h_diff)
-    log(h_mode, "DEBUG")
+    logger.log(h_mode, "DEBUG")
     ini_h = h_lines[0][1]
     rgb = (0,255,0)
     line_width = 8
@@ -146,7 +147,7 @@ def grid_coordinates(dir_name, verbose=False):
     rgb = (0,0,255)
     build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_line, rgb, line_width)
 
-    log("DONE --- Found grid coordinates", "VERBOSE")
+    logger.log("DONE --- Found grid coordinates", "VERBOSE")
     if __DEBUG__:
         fig = plt.figure(figsize=(10, 10))
         plt.imshow(cdst_p, alpha=0.6)
