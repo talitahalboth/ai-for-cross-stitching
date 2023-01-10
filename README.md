@@ -23,7 +23,7 @@ Cross-stitch patterns typically utilize a grid with symbols to represent the col
 
 ### Finding template images
 
-We utilize OpenCV to detect the grid that forms the pattern. From this grid, we extract each symbol, ensuring that there are no repeated images by applying template matching.
+We utilize OpenCV to detect the grid that forms the pattern. From this grid, we extract each symbol, ensuring that there are no repeated images by applying template matching. We utilize multiprocessing to increase spead.
 
 #### Example
 
