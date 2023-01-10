@@ -1,0 +1,1 @@
+https://www.thesprucecrafts.com/simple-cross-stitch-for-beginners-4122024
