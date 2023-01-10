@@ -25,9 +25,14 @@ if __name__ == "__main__":
     args = parser.parse_args()
     logger = SingletonLogger(args.verbose, args.debug)
     templates_directory = str(args.directory) + "templates/"
+
+    
+    if not os.path.isdir(args.directory + "/paths/"):
+        os.makedirs(args.directory + "/paths/")
+
     if args.templates is not None:
         templates_directory = args.templates
+        template_matching(args.directory, templates_directory, args.file)
     else:
         find_template_images(args.directory, args.file)
     # TODO: pass outputs argument
-    template_matching(args.directory, templates_directory, args.file)

@@ -5,7 +5,9 @@ from . import griddetection
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
+import multiprocessing
 from .logger import SingletonLogger
+from .templatematching import match_template
 
 __DEBUG__ = False
 __DELETE_FILES__ = False
@@ -115,6 +117,8 @@ def find_template_images(dir_name, file_name):
     """
     Find template images on cross stich pattern
     """
+
+    pool = multiprocessing.Pool()
 
     logger = SingletonLogger()
     logger.log("start")
@@ -236,17 +240,28 @@ def find_template_images(dir_name, file_name):
                     logger.log("Found template " + str(template_counter), "VERBOSE")
                     saved_templates.append(cropped_image)
 
-                    cv2.imwrite(dir_name + "/templates/template" + str(template_counter) + ".png",
+                    template_fine_name = "template" + str(template_counter) + ".png"
+                    templates_directory = dir_name + "/templates/"
+                    cv2.imwrite(templates_directory + template_fine_name,
                                 cropped_image_no_grid)
                     if __SAVE_FILLED__:
                         cv2.imwrite(dir_name + "/filled/template" +
                                 str(template_counter) + "-filled.png", cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
 
+                    # spawn process to match and find paths
+                    logger.log("Finding paths for template "+str(template_counter), "VERBOSE")
+                    pool.apply_async(match_template, (template_fine_name, dir_name, templates_directory, file_name))
+
                     template_counter += 1
+
 
             except cv2.error:
                 continue
 
-    logger.log("DONE --- Finding templates", "VERBOSE")
 
+    logger.log("DONE --- Finding templates", "VERBOSE")
+    logger.log("Waiting to finish finding paths", "VERBOSE")
+    pool.close()
+    pool.join()
+    logger.log("DONE --- Finding paths", "VERBOSE")
     os.remove("cropped.png")

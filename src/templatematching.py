@@ -106,11 +106,9 @@ def match_template(fileName, dir_name, templates_directory, original_file_name):
 def template_matching(directory, templates_directory, file_name):
     entries = os.listdir(templates_directory)
 
-    if not os.path.isdir(directory + "/paths/"):
-        os.makedirs(directory + "/paths/")
-    files = os.listdir(directory + "/paths/")
 
     if __DELETE_FILES__:
+        files = os.listdir(directory + "/paths/")
         for f in files:
             os.remove(directory + "/paths/" + f)
 
