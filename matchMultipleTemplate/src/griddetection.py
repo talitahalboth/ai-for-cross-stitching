@@ -1,5 +1,5 @@
 """
-@file gridDetection.py
+@file griddetection.py
 @brief This program finds grid coordinates and cell sizes for a cross stitch pattern image
 """
 import statistics

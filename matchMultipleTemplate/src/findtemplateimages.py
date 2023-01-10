@@ -1,7 +1,7 @@
 import math
 import os
 
-from . import gridDetection
+from . import griddetection
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
@@ -146,7 +146,7 @@ def find_template_images(dir_name, file_name):
 
     # get coordinates of grid from file
     logger.log("Calculating grid coordinates", "VERBOSE")
-    coords = gridDetection.grid_coordinates(file_path, True)
+    coords = griddetection.grid_coordinates(file_path, True)
     logger.log("DONE --- Calculating grid coordinates ", "VERBOSE")
     grid_size = coords[2]
     template_counter = 1

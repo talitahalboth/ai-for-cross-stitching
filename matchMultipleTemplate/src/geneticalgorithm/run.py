@@ -1,4 +1,4 @@
-from genetic_algorithm import genetic_algorithm
+from geneticalgorithm import genetic_algorithm
 from tsp import TSP
 import matplotlib.pyplot as plt
 plt.style.use('ggplot')
