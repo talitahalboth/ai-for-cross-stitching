@@ -9,7 +9,7 @@ from .logger import SingletonLogger
 
 __DEBUG__ = False
 __DELETE_FILES__ = False
-
+__SAVE_FILLED__ = True
 
 def check_templates_match(image_list, template):
     """
@@ -91,10 +91,10 @@ def crop_grid_borders_from_template(template):
     y_lines.sort()
     x = np.array(x_lines)
     x_smaller, x_greater = x[x < halfway_point -
-                             grid_size / 10], x[x > halfway_point + grid_size / 10]
+                             grid_size / 4], x[x > halfway_point + grid_size / 4]
     y = np.array(y_lines)
     y_smaller, y_greater = y[y < halfway_point -
-                             grid_size / 10], y[y > halfway_point + grid_size / 10]
+                             grid_size / 4], y[y > halfway_point + grid_size / 4]
 
     template_copy = template.copy()
     margin = 4
@@ -118,7 +118,7 @@ def find_template_images(dir_name, file_name):
 
     logger = SingletonLogger()
     logger.log("start")
-    if __DEBUG__:
+    if __SAVE_FILLED__:
         if not os.path.isdir(dir_name + "/filled/"):
             # if the demo_folder2 directory is
             # not present then create it.
@@ -139,7 +139,7 @@ def find_template_images(dir_name, file_name):
     file_path = dir_name + file_name
     src = cv2.imread(file_path)
     img_RGB = cv2.cvtColor(src, cv2.COLOR_BGR2RGB)
-    if __DEBUG__:
+    if __SAVE_FILLED__:
         cv2.imwrite(dir_name + "/filled/template0-filled.png", cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
     # and convert it from BGR to GRAY
     img_gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
@@ -195,7 +195,7 @@ def find_template_images(dir_name, file_name):
                     plt.imshow(cropped_image_no_grid)
                     plt.show()
 
-                if np.mean(cropped_image_no_grid) >= 250:
+                if np.mean(cropped_image_no_grid) >= 255:
                     continue
                 if cropped_image_no_grid.shape[0] < grid_size / 2 or cropped_image_no_grid.shape[1] < grid_size / 2:
                     continue
@@ -238,7 +238,7 @@ def find_template_images(dir_name, file_name):
 
                     cv2.imwrite(dir_name + "/templates/template" + str(template_counter) + ".png",
                                 cropped_image_no_grid)
-                    if __DEBUG__:
+                    if __SAVE_FILLED__:
                         cv2.imwrite(dir_name + "/filled/template" +
                                 str(template_counter) + "-filled.png", cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
 

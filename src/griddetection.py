@@ -12,22 +12,25 @@ from .logger import SingletonLogger
 __DEBUG__ = False
 
 
-def build_grid_coordinates_v_array(cdst_p, dimensions, h_mode, v_coords, v_lines, rgb,lineWidth):
+def build_grid_coordinates_v_array(cdst_p, dimensions, v_mode, v_coords, v_lines, rgb,lineWidth):
     """Build array of vertical coordinates from grid"""
     for i in range(1, len(v_lines)):
-        prev = v_lines[i - 1][0] + h_mode
+        prev = v_lines[i - 1][0] + v_mode
         cur = v_lines[i][0]
         while prev + 5 < cur:
             v_coords.append(prev)
             if __DEBUG__:
                 cv2.line(cdst_p, (prev, 0),
                         (prev, dimensions[0]), rgb, lineWidth, cv2.LINE_AA)
-            prev += h_mode
+            prev += v_mode
         v_coords.append(cur)
 
         if __DEBUG__:
             cv2.line(cdst_p, (cur, 0),
                     (cur, dimensions[0]), rgb, lineWidth, cv2.LINE_AA)
+
+    logger = SingletonLogger()
+    logger.log("Vertical coordinates: " + str(v_coords), "DEBUG")
 
 
 def build_grid_coordinates_h_arrays(cdst_p, dimensions, h_coords, h_lines, h_mode, rgb,lineWidth):
@@ -46,7 +49,6 @@ def build_grid_coordinates_h_arrays(cdst_p, dimensions, h_coords, h_lines, h_mod
         if __DEBUG__:
             cv2.line(cdst_p, (0, cur),
                     (dimensions[1], cur), rgb, lineWidth, cv2.LINE_AA)
-
 
 def build_grid_lines_array(dimensions, h_lines, linesP, v_lines):
     for line in linesP:
@@ -100,8 +102,14 @@ def grid_coordinates(file_name, verbose=False):
     cdst = cv2.cvtColor(dst, cv2.COLOR_GRAY2BGR)
     cdst_p = np.copy(cdst)
     shape = src.shape
+    # the minimum lenght allowed for the line
+    # should be at least 1/5th of the figure size
+    minLineLength = min(shape[0],shape[1])/5
+    # the maximum gap allowed between two points in a line
+    maxLineGap = min(shape[0],shape[1])/100
+    # Probabilistic Hough Line Transform
     linesP = cv2.HoughLinesP(dst, rho=2, theta=np.pi / 180,
-                            threshold=50, lines=None, minLineLength=shape[0]/10, maxLineGap=shape[0]/100)
+                            threshold=50, lines=None, minLineLength=minLineLength, maxLineGap=maxLineGap)
 
     h_lines = []
     v_lines = []
