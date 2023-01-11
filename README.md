@@ -37,7 +37,7 @@ The following pattern[[1]](#1):
 <img src="https://user-images.githubusercontent.com/19466053/211228312-5c06968f-2e07-434e-bfcd-80ecbdae98d0.png " width=50% height=50%>
 
 
-Has 6 different symbols, indicating 5 differente colours, and these are represented by the following symbols:
+Has 5 different symbols, indicating 5 differente colours, and these are represented by the following symbols:
 
 ![template1](https://user-images.githubusercontent.com/19466053/211228280-a6a12506-2a43-4f55-9de8-6881fb90b714.png)
 ![template2](https://user-images.githubusercontent.com/19466053/211228284-4f1b9f95-410d-487e-af25-276b79771635.png)
