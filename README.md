@@ -81,6 +81,11 @@ The mutation rate was set to 0.01. The mutation works by randomly swapping eleme
 
 The next generation is selected based on their aptitude, combining parents and children, and the n best individuals are chosen.
 
+## Observations
+
+Big pattern images work better than small ones, and sometimes it has issues with low res images.
+The template images' size must be as close as possible to the size of the symbols on the actual pattern.
+
 ## References
 <a id="1">[1]</a> 
 [DMC - ROCKET SHIP PATTERN](https://www.dmc.com/us/rocket-ship--pattern-9003993.html)
