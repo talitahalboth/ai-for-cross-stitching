@@ -23,11 +23,16 @@ Cross-stitch patterns typically utilize a grid with symbols to represent the col
 
 ### Finding template images
 
-We utilize OpenCV to detect the grid that forms the pattern. From this grid, we extract each symbol, ensuring that there are no repeated images by applying template matching. We also use multiprocessing to increase speed.
+We utilize OpenCV to detect the grid that forms the pattern:
+
+<img src="https://user-images.githubusercontent.com/19466053/211701658-b122620e-b877-401f-81ab-9613437eb4b4.png" width=50% height=50%>
+
+
+From this grid, we extract each symbol, ensuring that there are no repeated images by applying template matching.
 
 #### Example
 
-The following pattern[[1]](#1)
+The following pattern[[1]](#1):
 
 <img src="https://user-images.githubusercontent.com/19466053/211228312-5c06968f-2e07-434e-bfcd-80ecbdae98d0.png " width=50% height=50%>
 
@@ -43,7 +48,7 @@ Has 6 different symbols, indicating 5 differente colours, and these are represen
 
 ### Finding colour of each stitch
 
-Once again, we utilize OpenCV template matching to identify the coordinates of each colour. These coordinates will form the path that we follow when cross stitching each colour.
+Once again, we utilize OpenCV template matching to identify the coordinates of each colour. These coordinates will form the path that we follow when cross stitching each colour. To to that, we use a genetic algorithm. To speed things up, on this part we use multiple threads, and each template is a seperate thread.
 
 #### Example:
 
