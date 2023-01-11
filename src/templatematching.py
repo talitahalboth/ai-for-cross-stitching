@@ -10,7 +10,6 @@ import cv2
 import multiprocessing
 import numpy as np
 from matplotlib import pyplot as plt
-from signal import CTRL_C_EVENT, signal, SIGINT
 
 __DELETE_FILES__ = False
 
