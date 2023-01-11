@@ -52,8 +52,12 @@ Once again, we utilize OpenCV template matching to identify the coordinates of e
 
 #### Example:
 
-The blue path is the shortest path found by the genetic algorithm to pass through each points with the ![template1](https://user-images.githubusercontent.com/19466053/211228280-a6a12506-2a43-4f55-9de8-6881fb90b714.png)
- symbol.
+The blue filled squares are the regions that matched the ![template1](https://user-images.githubusercontent.com/19466053/211228280-a6a12506-2a43-4f55-9de8-6881fb90b714.png) template.
+
+<img src="https://user-images.githubusercontent.com/19466053/211805952-8eee5c86-b84b-4c59-abba-55ee281ed677.png" width=50% height=50%>
+
+
+The blue path is the shortest path found by the genetic algorithm to pass through each points matching the template we used.
 
 <img src="https://user-images.githubusercontent.com/19466053/211228271-7602a11c-16a4-402e-9d00-8bbdd3e69941.png " width=50% height=50%>
 
