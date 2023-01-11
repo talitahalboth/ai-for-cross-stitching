@@ -9,7 +9,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from .logger import SingletonLogger
 
-__DEBUG__ = True
+__DEBUG__ = False
 
 
 def build_grid_coordinates_v_array(cdst_p, dimensions, v_mode, v_coords, v_lines, rgb,lineWidth):
