@@ -10,7 +10,7 @@ from .logger import SingletonLogger
 from .templatematching import match_template
 
 __DEBUG__ = False
-__DELETE_FILES__ = False
+__DELETE_FILES__ = True
 __SAVE_FILLED__ = True
 
 def check_templates_match(image_list, template):
@@ -113,38 +113,40 @@ def rectangles_overlap(R1, R2):
     return True
 
 
-def find_template_images(dir_name, file_name):
+def find_template_images(dir_name, file_name, output_directory):
     """
     Find template images on cross stich pattern
     """
 
     logger = SingletonLogger()
     logger.log("start")
+    filled_directory = dir_name / "filled"
     if __SAVE_FILLED__:
-        if not os.path.isdir(dir_name + "/filled/"):
-            os.makedirs(dir_name + "/filled/")
+        if not os.path.isdir(filled_directory):
+            os.makedirs(filled_directory)
         if __DELETE_FILES__:
-            filedFilled = os.listdir(dir_name + "/filled/")
+            filedFilled = os.listdir(filled_directory)
             for f in filedFilled:
-                os.remove(dir_name + "/filled/" + f)
+                os.remove(filled_directory / f)
 
-    if not os.path.isdir(dir_name + "/templates/"):
-        os.makedirs(dir_name + "/templates/")
+    templates_directory = dir_name / "templates"
+    if not os.path.isdir(templates_directory):
+        os.makedirs(templates_directory)
     if __DELETE_FILES__:
-        files = os.listdir(dir_name + "/templates/")
-        for f in files:
-            os.remove(dir_name + "/templates/" + f)
-    file_path = dir_name + file_name
-    src = cv2.imread(file_path)
+        files_templates = os.listdir(templates_directory)
+        for f in files_templates:
+            os.remove(templates_directory / f)
+    file_path = dir_name / file_name
+    src = cv2.imread(str(file_path))
     img_RGB = cv2.cvtColor(src, cv2.COLOR_BGR2RGB)
     if __SAVE_FILLED__:
-        cv2.imwrite(dir_name + "/filled/template0-filled.png", cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
+        cv2.imwrite(str(dir_name / "/filled/template0-filled.png"), cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
     # and convert it from BGR to GRAY
     img_gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
 
     # get coordinates of grid from file
     logger.log("Calculating grid coordinates", "VERBOSE")
-    coords = griddetection.grid_coordinates(file_path, True)
+    coords = griddetection.grid_coordinates(str(file_path), True)
     logger.log("DONE --- Calculating grid coordinates ", "VERBOSE")
     grid_size = coords[2]
     template_counter = 1
@@ -235,15 +237,23 @@ def find_template_images(dir_name, file_name):
                     saved_templates.append(cropped_image)
 
                     template_fine_name = "template" + str(template_counter) + ".png"
-                    templates_directory = dir_name + "/templates/"
-                    cv2.imwrite(templates_directory + template_fine_name,
+                    # templates_directory = dir_name + "/templates/"
+                    cv2.imwrite(str(templates_directory / template_fine_name),
                                 cropped_image_no_grid)
                     if __SAVE_FILLED__:
-                        cv2.imwrite(dir_name + "/filled/template" +
-                                str(template_counter) + "-filled.png", cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
+                        cv2.imwrite(
+                            str(filled_directory / (str(template_counter) + "-filled.png")),
+                            cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
 
                     # spawn process to match and find paths
-                    multiprocessing.Process(target=match_template, args=(template_fine_name, dir_name, templates_directory, file_name, logger.__VERBOSE__, logger.__DEBUG__)).start()
+                    multiprocessing.Process(target=match_template, args=(template_fine_name,
+                                                                         dir_name,
+                                                                         templates_directory,
+                                                                         file_name,
+                                                                         output_directory,
+                                                                         logger.__VERBOSE__,
+                                                                         logger.__DEBUG__)
+                                            ).start()
 
                     template_counter += 1
 
@@ -252,5 +262,5 @@ def find_template_images(dir_name, file_name):
                 continue
 
     logger.log("DONE --- Finding templates", "INFO")
-    
+
     os.remove("cropped.png")

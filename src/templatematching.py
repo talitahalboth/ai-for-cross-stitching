@@ -12,7 +12,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 from signal import CTRL_C_EVENT, signal, SIGINT
 
-
 __DELETE_FILES__ = False
 
 from .geneticalgorithm.geneticalgorithm import genetic_algorithm
@@ -46,17 +45,17 @@ def draw_path(problem, permutation, shortestHamPath=True):
     plt.plot(xs, ys, marker='o')
 
 
-def match_template(file_name, dir_name, templates_directory, original_file_name, verbose=False, debug=False):
+def match_template(file_name, dir_name, templates_directory, original_file_name, output_directory, verbose=False, debug=False):
     try:
         logger = SingletonLogger(verbose, debug)
-        logger.log("START -- Matching template for template: "+file_name,  "INFO")
-        img = cv2.imread(dir_name + original_file_name)
+        logger.log("START -- Matching template for template: " + file_name, "INFO")
+        img = cv2.imread(str(dir_name / original_file_name))
         # convert it from BGR to RGB
         imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         # and convert it from BGR to GRAY
         imgGray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-        template = cv2.imread(templates_directory + file_name, 0)
+        template = cv2.imread(str(templates_directory / file_name), 0)
 
         # then we get the shape of the template
         w, h = template.shape[::-1]
@@ -70,11 +69,11 @@ def match_template(file_name, dir_name, templates_directory, original_file_name,
         # then we get the locations, that have values bigger, than our threshold
         loc = np.where(res >= threshold)
 
-        logger.log("DONE -- Matching template for template: "+file_name,  "INFO")
+        logger.log("DONE -- Matching template for template: " + file_name, "INFO")
         # remove points too close to each other, likely the same image matched twice
         newPoints = remove_coordinates_close(list(zip(*loc[::-1])))
 
-        tspfile_name = file_name.split('.')[0]+"-tsp.tsp"
+        tspfile_name = file_name.split('.')[0] + "-tsp.tsp"
         f = open(tspfile_name, "w")
 
         f.write("NAME: " + file_name + '\n')
@@ -87,35 +86,37 @@ def match_template(file_name, dir_name, templates_directory, original_file_name,
             f.write(" ".join([str(index), str(pt[0] + w / 2), str(pt[1] + h / 2)]) + '\n')
             index += 1
             cv2.rectangle(imgRGB,
-                        pt,
-                        (pt[0] + w, pt[1] + h),
-                        (230, 0, 255),
-                        1)
+                          pt,
+                          (pt[0] + w, pt[1] + h),
+                          (230, 0, 255),
+                          1)
         f.write("EOF" + '\n')
         f.close()
         problem = TSP(tspfile_name)
 
-        logger.log("START -- Calculating path for template: "+file_name, "INFO")
+        logger.log("START -- Calculating path for template: " + file_name, "INFO")
         path, history = genetic_algorithm(problem)
-        logger.log("DONE -- Calculating path for template: "+file_name,  "INFO")
+        logger.log("DONE -- Calculating path for template: " + file_name, "INFO")
 
         fig = plt.figure(figsize=(10, 10))
         plt.imshow(imgRGB, alpha=0.4)
         draw_path(problem, path)
-        plt.savefig(dir_name + '/paths/' + file_name)
+        plt.savefig(str(output_directory / file_name))
         plt.close('all')
         os.remove(tspfile_name)
     except Exception as e:
-        logger.log(f"An error ocurred while matching template for file {file_name}: {e}",  "ERROR")
+        logger.log(f"An error ocurred while matching template for file {file_name}: {e}", "ERROR")
 
-def template_matching(directory, templates_directory, file_name):
+
+def template_matching(directory, templates_directory, file_name, output_directory):
     entries = os.listdir(templates_directory)
 
     logger = SingletonLogger()
-    if __DELETE_FILES__:
-        files = os.listdir(directory + "/paths/")
+    if True:
+        paths_directory = directory / "paths"
+        files = os.listdir(paths_directory)
         for f in files:
-            os.remove(directory + "/paths/" + f)
+            os.remove(paths_directory / f)
     for entry in entries:
-        multiprocessing.Process(target=match_template, args=(entry, directory, templates_directory, file_name, logger.__VERBOSE__, logger.__DEBUG__)).start()
-        
+        multiprocessing.Process(target=match_template, args=(
+            entry, directory, templates_directory, file_name, output_directory, logger.__VERBOSE__, logger.__DEBUG__)).start()
