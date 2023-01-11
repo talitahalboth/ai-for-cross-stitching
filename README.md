@@ -1,4 +1,10 @@
-# ai-for-cross-stitching
+# AI for Cross Stitching
+<a href="https://github.com/talitahalboth/ai-for-cross-stitching/blob/main/LICENSE">
+  <img src="https://img.shields.io/github/license/talitahalboth/ai-for-cross-stitching?color=f8be29&style=flat-square">
+</a>
+<a href="https://github.com/talitahalboth/ai-for-cross-stitching/stargazers">
+  <img src="https://img.shields.io/github/stars/talitahalboth/ai-for-cross-stitching?color=f8be29&style=flat-square">
+</a>
 
 ## Requirements
 
