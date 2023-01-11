@@ -140,7 +140,7 @@ def find_template_images(dir_name, file_name, output_directory):
     src = cv2.imread(str(file_path))
     img_RGB = cv2.cvtColor(src, cv2.COLOR_BGR2RGB)
     if __SAVE_FILLED__:
-        cv2.imwrite(str(dir_name / "/filled/template0-filled.png"), cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
+        cv2.imwrite(str(filled_directory / "0-filled.png"), cv2.cvtColor(img_RGB, cv2.COLOR_BGR2RGB))
     # and convert it from BGR to GRAY
     img_gray = cv2.cvtColor(src, cv2.COLOR_BGR2GRAY)
 
