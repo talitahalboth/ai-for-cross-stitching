@@ -14,7 +14,7 @@ if __name__ == "__main__":
     parser.add_argument("-D", "--debug", help="Output debug logs",
                         action="store_true")
     # TODO: add / to end of dir name
-    parser.add_argument("-d", "--directory", help="Directory location of pattern", default="examples/starryNight/",
+    parser.add_argument("-d", "--directory", help="Directory location of pattern", default="examples/heart/",
                         action="store")
     parser.add_argument("-f", "--file", help="File name of pattern (default: img.png). "
                                              "The file must preferably have dimensions over 1500px", default="img.png",
